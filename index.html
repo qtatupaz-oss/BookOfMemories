@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Book of Memories 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fdf6ee;
+    --parchment: #f5e6d0;
+    --rose: #c9707a;
+    --rose-light: #f2b5bb;
+    --rose-dark: #8e3d45;
+    --ink: #2c1f1f;
+    --ink-light: #5a3e3e;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --sage: #7a9e7e;
+    --shadow: rgba(44,31,31,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Lato', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, #f7e0cc 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, #f2d9c8 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    position: relative;
+  }
+  header::after {
+    content: '';
+    display: block;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 24px auto 0;
+  }
+  .header-subtitle {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--rose);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    color: var(--ink);
+    line-height: 1.1;
+    font-weight: 700;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rose-dark);
+  }
+  .heart-divider {
+    font-size: 1.4rem;
+    margin: 6px 0;
+    color: var(--rose-light);
+    display: block;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(253,246,238,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--gold-light);
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border: 1.5px solid var(--rose-light);
+    border-radius: 40px;
+    background: white;
+    color: var(--rose-dark);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn:hover {
+    background: var(--rose);
+    color: white;
+    border-color: var(--rose);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201,112,122,0.3);
+  }
+  .btn.primary {
+    background: var(--rose);
+    color: white;
+    border-color: var(--rose);
+  }
+  .btn.primary:hover {
+    background: var(--rose-dark);
+    border-color: var(--rose-dark);
+  }
+
+  /* ── CANVAS ── */
+  #canvas {
+    min-height: 70vh;
+    padding: 32px 24px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--ink-light);
+    pointer-events: none;
+  }
+  .empty-state .big-icon { font-size: 4rem; margin-bottom: 16px; display: block; }
+  .empty-state h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .empty-state p { font-weight: 300; opacity: 0.7; }
+
+  /* ── MEMORY CARDS ── */
+  .memory {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    transition: box-shadow 0.2s;
+    touch-action: none;
+  }
+  .memory:active { cursor: grabbing; }
+  .memory.selected { outline: 2px dashed var(--rose); outline-offset: 4px; }
+
+  /* Photo card */
+  .memory-photo {
+    background: white;
+    padding: 12px 12px 36px;
+    box-shadow: 3px 4px 18px var(--shadow), 0 1px 4px rgba(0,0,0,0.06);
+    transform: rotate(var(--tilt, -1.5deg));
+    max-width: 260px;
+  }
+  .memory-photo img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+  }
+  .memory-photo .caption {
+    font-family: 'Dancing Script', cursive;
+    font-size: 0.95rem;
+    color: var(--ink-light);
+    text-align: center;
+    margin-top: 8px;
+    outline: none;
+    min-height: 24px;
+  }
+  .memory-photo .tape {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 56px;
+    height: 20px;
+    background: rgba(201,168,76,0.35);
+    border-radius: 2px;
+  }
+
+  /* Note card */
+  .memory-note {
+    background: var(--note-bg, #fff9e6);
+    padding: 20px;
+    box-shadow: 3px 4px 18px var(--shadow);
+    border-radius: 2px;
+    min-width: 180px;
+    max-width: 260px;
+    transform: rotate(var(--tilt, 1deg));
+    border-left: 4px solid var(--note-accent, var(--gold));
+  }
+  .memory-note .note-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--ink);
+    outline: none;
+    min-height: 60px;
+    white-space: pre-wrap;
+  }
+  .memory-note .note-date {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.7rem;
+    color: var(--ink-light);
+    opacity: 0.6;
+    margin-top: 12px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Sticker */
+  .memory-sticker {
+    font-size: var(--sticker-size, 3rem);
+    line-height: 1;
+    text-align: center;
+    padding: 8px;
+    user-select: none;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.15));
+    min-width: 60px;
+  }
+
+  /* Label */
+  .memory-label {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4rem;
+    color: var(--label-color, var(--rose-dark));
+    padding: 6px 12px;
+    outline: none;
+    min-width: 80px;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
+  }
+
+  /* Delete button on cards */
+  .delete-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: var(--rose);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    display: none;
+    z-index: 10;
+  }
+  .memory.selected .delete-btn { display: block; }
+  .delete-btn:hover { background: var(--rose-dark); }
+
+  /* Resize handle */
+  .resize-handle {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--rose-light);
+    border-radius: 2px;
+    cursor: se-resize;
+    display: none;
+  }
+  .memory.selected .resize-handle { display: block; }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,31,31,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--cream);
+    border-radius: 4px;
+    padding: 36px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(44,31,31,0.3);
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    margin-bottom: 24px;
+    color: var(--rose-dark);
+  }
+  .modal label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+  }
+  .modal input[type="text"],
+  .modal textarea,
+  .modal select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gold-light);
+    border-radius: 3px;
+    background: white;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal input:focus, .modal textarea:focus, .modal select:focus {
+    border-color: var(--rose-light);
+  }
+  .modal textarea { resize: vertical; min-height: 90px; }
+  .color-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s;
+  }
+  .color-swatch:hover, .color-swatch.active { transform: scale(1.2); border-color: var(--ink); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+  .close-modal {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: none; border: none;
+    font-size: 1.3rem; cursor: pointer;
+    color: var(--ink-light);
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .close-modal:hover { opacity: 1; }
+
+  /* Sticker picker */
+  .sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 8px 0;
+    margin-bottom: 16px;
+  }
+  .sticker-option {
+    font-size: 1.6rem;
+    text-align: center;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.15s, transform 0.15s;
+    line-height: 1;
+  }
+  .sticker-option:hover { background: var(--rose-light); transform: scale(1.2); }
+  .sticker-option.selected { background: var(--rose-light); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1rem;
+    color: var(--rose-light);
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed var(--gold-light);
+    border-radius: 4px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    color: var(--ink-light);
+    font-size: 0.9rem;
+  }
+  .upload-area:hover { border-color: var(--rose-light); background: rgba(201,112,122,0.04); }
+  .upload-area .upload-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+  #fileInput { display: none; }
+
+  /* Tooltip */
+  .tip {
+    font-size: 0.72rem;
+    color: var(--ink-light);
+    opacity: 0.6;
+    margin-bottom: 16px;
+  }
+
+  /* Page title area */
+  .page-title-area {
+    text-align: center;
+    padding: 12px 24px 28px;
+  }
+  #pageTitle {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4rem;
+    color: var(--rose);
+    border: none;
+    background: transparent;
+    text-align: center;
+    outline: none;
+    border-bottom: 1px dashed var(--rose-light);
+    padding: 4px 16px;
+    width: auto;
+    min-width: 200px;
+    transition: border-color 0.2s;
+  }
+  #pageTitle:focus { border-bottom-color: var(--rose); }
+
+  /* Background chooser */
+  .bg-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .bg-opt {
+    width: 48px;
+    height: 38px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .bg-opt:hover, .bg-opt.active { transform: scale(1.1); border-color: var(--ink); }
+
+  /* Save notification */
+  .save-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .save-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-subtitle">A little something just for us 🌸</p>
+  <h1>Our <em>Book of</em></h1>
+  <span class="heart-divider">♡</span>
+  <h1><em>Memories</em></h1>
+</header>
+
+<div class="page-title-area">
+  <input id="pageTitle" type="text" placeholder="Name this chapter..." maxlength="60" />
+</div>
+
+<div class="toolbar">
+  <button class="btn primary" onclick="openModal('photoModal')">📷 Add Photo</button>
+  <button class="btn" onclick="openModal('noteModal')">✏️ Add Note</button>
+  <button class="btn" onclick="openModal('stickerModal')">✨ Sticker</button>
+  <button class="btn" onclick="openModal('labelModal')">🏷 Label</button>
+  <button class="btn" onclick="openModal('bgModal')">🎨 Background</button>
+  <button class="btn" onclick="clearSelected()">🗂 Deselect</button>
+  <button class="btn" onclick="saveAll()">💾 Save</button>
+</div>
+
+<div id="canvas">
+  <div class="empty-state" id="emptyState">
+    <span class="big-icon">💌</span>
+    <h2>Your scrapbook is empty</h2>
+    <p>Add photos, notes, stickers, or labels to fill it with love.</p>
+  </div>
+</div>
+
+<!-- ── PHOTO MODAL ── -->
+<div id="photoModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('photoModal')">×</button>
+    <h2>Add a Photo 📷</h2>
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+      <span class="upload-icon">🖼️</span>
+      Click to choose a photo from your device
+    </div>
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" />
+    <label>Caption (optional)</label>
+    <input type="text" id="photoCaption" placeholder="A wonderful day..." />
+    <p class="tip">💡 Tip: Photos are stored inside the saved file as base64 data.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('photoModal')">Cancel</button>
+      <button class="btn primary" onclick="addPhoto()">Add to Page</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── NOTE MODAL ── -->
+<div id="noteModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('noteModal')">×</button>
+    <h2>Write a Note ✏️</h2>
+    <label>Your message</label>
+    <textarea id="noteText" placeholder="Remember when we..."></textarea>
+    <label>Note color</label>
+    <div class="color-row" id="noteColors"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('noteModal')">Cancel</button>
+      <button class="btn primary" onclick="addNote()">Add to Page</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STICKER MODAL ── -->
+<div id="stickerModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('stickerModal')">×</button>
+    <h2>Pick a Sticker ✨</h2>
+    <div class="sticker-grid" id="stickerGrid"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('stickerModal')">Cancel</button>
+      <button class="btn primary" onclick="addSticker()">Add Sticker</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LABEL MODAL ── -->
+<div id="labelModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('labelModal')">×</button>
+    <h2>Add a Label 🏷</h2>
+    <label>Label text</label>
+    <input type="text" id="labelText" placeholder="Summer 2024 ♡" />
+    <label>Color</label>
+    <div class="color-row" id="labelColors"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('labelModal')">Cancel</button>
+      <button class="btn primary" onclick="addLabel()">Add Label</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BACKGROUND MODAL ── -->
+<div id="bgModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('bgModal')">×</button>
+    <h2>Choose a Background 🎨</h2>
+    <div class="bg-options" id="bgOptions"></div>
+    <div class="modal-actions">
+      <button class="btn primary" onclick="closeModal('bgModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="saveToast" class="save-toast">✓ Saved!</div>
+
+<footer>made with love, just for the two of us ♡</footer>
+
+<script>
+// ── STATE ──
+let memories = [];
+let pageTitle = '';
+let selectedMemory = null;
+let dragState = null;
+let pendingPhotoData = null;
+let selectedSticker = null;
+let noteColorIdx = 0;
+let labelColorIdx = 0;
+let bgIndex = 0;
+
+const NOTE_COLORS = [
+  { bg: '#fff9e6', accent: '#c9a84c' },
+  { bg: '#fce4ec', accent: '#c9707a' },
+  { bg: '#e8f5e9', accent: '#7a9e7e' },
+  { bg: '#e3f2fd', accent: '#5b8db8' },
+  { bg: '#f3e5f5', accent: '#9c6fb6' },
+  { bg: '#fff3e0', accent: '#d4845a' },
+];
+const LABEL_COLORS = ['#c9707a','#c9a84c','#7a9e7e','#5b8db8','#9c6fb6','#d4845a','#2c1f1f'];
+const STICKERS = ['💌','🌸','🌹','🌷','🌼','💐','🫶','💖','💕','💗','✨','⭐','🌟','🎀','🎁','🥂','🍓','🍰','🫧','🌙','☀️','🌈','🦋','🐾','🌿','🍃','🪷','💫','🎶','🎵','🧸','🪞','🕯️','🫐','🍒','🍑','🧁','🌺','💝','🫀'];
+const BACKGROUNDS = [
+  { label: 'Parchment', style: 'background-color:#f5e6d0;' },
+  { label: 'Rose', style: 'background-color:#fce4ec;background-image:radial-gradient(circle at 30% 20%,#ffd6df 0%,transparent 60%);' },
+  { label: 'Sage', style: 'background-color:#e8f0e8;background-image:radial-gradient(circle at 70% 80%,#d6e8d6 0%,transparent 60%);' },
+  { label: 'Sky', style: 'background-color:#e3f0fb;background-image:radial-gradient(circle at 20% 80%,#cce4f7 0%,transparent 60%);' },
+  { label: 'Lavender', style: 'background-color:#f0e8f8;background-image:radial-gradient(circle at 80% 20%,#e0d0f0 0%,transparent 60%);' },
+  { label: 'Ivory', style: 'background-color:#fffff0;background-image:radial-gradient(circle at 50% 50%,#fffee0 0%,transparent 80%);' },
+  { label: 'Night', style: 'background-color:#1a1228;background-image:radial-gradient(circle at 30% 30%,#2d1f3d 0%,transparent 60%);' },
+  { label: 'Kraft', style: 'background-color:#d9b896;background-image:url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%274%27 height=%274%27%3E%3Crect width=%274%27 height=%274%27 fill=%27%23d9b896%27/%3E%3Ccircle cx=%272%27 cy=%272%27 r=%221%27 fill=%27%23c9a57d%27 opacity=%270.4%27/%3E%3C/svg%3E\");' },
+];
+
+const BG_COLORS_DISPLAY = ['#f5e6d0','#fce4ec','#e8f0e8','#e3f0fb','#f0e8f8','#fffff0','#1a1228','#d9b896'];
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  buildStickerGrid();
+  buildNoteColors();
+  buildLabelColors();
+  buildBgOptions();
+  loadFromStorage();
+  document.getElementById('pageTitle').addEventListener('input', e => {
+    pageTitle = e.target.value;
+    scheduleSave();
+  });
+  document.getElementById('canvas').addEventListener('click', e => {
+    if (e.target === document.getElementById('canvas') || e.target.id === 'emptyState') {
+      clearSelected();
+    }
+  });
+});
+
+// ── BUILD UI COMPONENTS ──
+function buildStickerGrid() {
+  const grid = document.getElementById('stickerGrid');
+  STICKERS.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'sticker-option';
+    d.textContent = s;
+    d.onclick = () => {
+      document.querySelectorAll('.sticker-option').forEach(x => x.classList.remove('selected'));
+      d.classList.add('selected');
+      selectedSticker = s;
+    };
+    grid.appendChild(d);
+  });
+}
+
+function buildNoteColors() {
+  const row = document.getElementById('noteColors');
+  NOTE_COLORS.forEach((c, i) => {
+    const s = document.createElement('div');
+    s.className = 'color-swatch' + (i === 0 ? ' active' : '');
+    s.style.background = c.bg;
+    s.style.border = `2px solid ${c.accent}`;
+    s.onclick = () => {
+      document.querySelectorAll('#noteColors .color-swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+      noteColorIdx = i;
+    };
+    row.appendChild(s);
+  });
+}
+
+function buildLabelColors() {
+  const row = document.getElementById('labelColors');
+  LABEL_COLORS.forEach((c, i) => {
+    const s = document.createElement('div');
+    s.className = 'color-swatch' + (i === 0 ? ' active' : '');
+    s.style.background = c;
+    s.onclick = () => {
+      document.querySelectorAll('#labelColors .color-swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+      labelColorIdx = i;
+    };
+    row.appendChild(s);
+  });
+}
+
+function buildBgOptions() {
+  const row = document.getElementById('bgOptions');
+  BACKGROUNDS.forEach((bg, i) => {
+    const d = document.createElement('div');
+    d.className = 'bg-opt' + (i === 0 ? ' active' : '');
+    d.style.cssText = `background:${BG_COLORS_DISPLAY[i]};`;
+    d.title = bg.label;
+    d.onclick = () => {
+      document.querySelectorAll('.bg-opt').forEach(x => x.classList.remove('active'));
+      d.classList.add('active');
+      bgIndex = i;
+      applyBackground();
+      scheduleSave();
+    };
+    row.appendChild(d);
+  });
+}
+
+function applyBackground() {
+  document.body.style.cssText = BACKGROUNDS[bgIndex].style;
+}
+
+// ── MODAL ──
+function openModal(id) {
+  document.getElementById(id).style.display = 'flex';
+  if (id === 'stickerModal') { selectedSticker = null; document.querySelectorAll('.sticker-option').forEach(x => x.classList.remove('selected')); }
+}
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); } });
+
+// ── ADD ELEMENTS ──
+function randomTilt() { return (Math.random() * 6 - 3).toFixed(1); }
+function randomPos() {
+  const canvas = document.getElementById('canvas');
+  const w = canvas.offsetWidth;
+  const h = Math.max(canvas.offsetHeight, 400);
+  return { x: 40 + Math.random() * Math.max(w - 300, 100), y: 40 + Math.random() * Math.max(h - 300, 100) };
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { pendingPhotoData = ev.target.result; };
+  reader.readAsDataURL(file);
+}
+
+function addPhoto() {
+  if (!pendingPhotoData) { alert('Please choose a photo first.'); return; }
+  const caption = document.getElementById('photoCaption').value || '';
+  const pos = randomPos();
+  const tilt = randomTilt();
+  const id = Date.now();
+  const mem = { id, type: 'photo', src: pendingPhotoData, caption, x: pos.x, y: pos.y, tilt, w: 220 };
+  memories.push(mem);
+  renderMemory(mem);
+  pendingPhotoData = null;
+  document.getElementById('photoCaption').value = '';
+  document.getElementById('fileInput').value = '';
+  closeModal('photoModal');
+  updateEmptyState();
+  scheduleSave();
+}
+
+function addNote() {
+  const text = document.getElementById('noteText').value.trim();
+  if (!text) { alert('Please write something!'); return; }
+  const pos = randomPos();
+  const tilt = randomTilt();
+  const id = Date.now();
+  const c = NOTE_COLORS[noteColorIdx];
+  const mem = { id, type: 'note', text, bg: c.bg, accent: c.accent, x: pos.x, y: pos.y, tilt, date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) };
+  memories.push(mem);
+  renderMemory(mem);
+  document.getElementById('noteText').value = '';
+  closeModal('noteModal');
+  updateEmptyState();
+  scheduleSave();
+}
+
+function addSticker() {
+  if (!selectedSticker) { alert('Please pick a sticker!'); return; }
+  const pos = randomPos();
+  const id = Date.now();
+  const mem = { id, type: 'sticker', emoji: selectedSticker, x: pos.x, y: pos.y, size: 56 };
+  memories.push(mem);
+  renderMemory(mem);
+  closeModal('stickerModal');
+  updateEmptyState();
+  scheduleSave();
+}
+
+function addLabel() {
+  const text = document.getElementById('labelText').value.trim();
+  if (!text) { alert('Please enter label text!'); return; }
+  const pos = randomPos();
+  const tilt = randomTilt();
+  const id = Date.now();
+  const mem = { id, type: 'label', text, color: LABEL_COLORS[labelColorIdx], x: pos.x, y: pos.y, tilt };
+  memories.push(mem);
+  renderMemory(mem);
+  document.getElementById('labelText').value = '';
+  closeModal('labelModal');
+  updateEmptyState();
+  scheduleSave();
+}
+
+// ── RENDER ──
+function renderMemory(mem) {
+  const canvas = document.getElementById('canvas');
+  let el;
+
+  if (mem.type === 'photo') {
+    el = document.createElement('div');
+    el.className = 'memory memory-photo';
+    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;width:${mem.w || 220}px;`;
+    el.innerHTML = `
+      <div class="tape"></div>
+      <img src="${mem.src}" alt="memory" />
+      <div class="caption" contenteditable="true" data-field="caption">${escHtml(mem.caption)}</div>
+      <button class="delete-btn" title="Remove">×</button>
+      <div class="resize-handle"></div>
+    `;
+  } else if (mem.type === 'note') {
+    el = document.createElement('div');
+    el.className = 'memory memory-note';
+    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;--note-bg:${mem.bg};--note-accent:${mem.accent};`;
+    el.innerHTML = `
+      <div class="note-text" contenteditable="true" data-field="text">${escHtml(mem.text)}</div>
+      <div class="note-date">${mem.date || ''}</div>
+      <button class="delete-btn" title="Remove">×</button>
+      <div class="resize-handle"></div>
+    `;
+  } else if (mem.type === 'sticker') {
+    el = document.createElement('div');
+    el.className = 'memory memory-sticker';
+    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--sticker-size:${mem.size || 56}px;font-size:${mem.size || 56}px;`;
+    el.textContent = mem.emoji;
+    el.innerHTML += `<button class="delete-btn" title="Remove">×</button><div class="resize-handle"></div>`;
+  } else if (mem.type === 'label') {
+    el = document.createElement('div');
+    el.className = 'memory memory-label';
+    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;--label-color:${mem.color};transform:rotate(${mem.tilt}deg);`;
+    el.innerHTML = `<span contenteditable="true" data-field="text">${escHtml(mem.text)}</span><button class="delete-btn" title="Remove">×</button>`;
+  }
+
+  el.dataset.id = mem.id;
+  makeDraggable(el, mem);
+
+  // Select on click
+  el.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('delete-btn') || e.target.classList.contains('resize-handle')) return;
+    selectMemory(el, mem);
+  });
+  el.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('delete-btn')) return;
+    selectMemory(el, mem);
+  }, { passive: true });
+
+  // Delete
+  const delBtn = el.querySelector('.delete-btn');
+  if (delBtn) delBtn.addEventListener('click', e => { e.stopPropagation(); removeMemory(mem.id); });
+
+  // Resize
+  const resizeHandle = el.querySelector('.resize-handle');
+  if (resizeHandle) makeResizable(el, mem, resizeHandle);
+
+  // Save on content edit
+  el.querySelectorAll('[contenteditable]').forEach(ce => {
+    ce.addEventListener('input', () => {
+      const field = ce.dataset.field;
+      if (field) { mem[field] = ce.textContent; scheduleSave(); }
+    });
+    ce.addEventListener('mousedown', e => e.stopPropagation());
+  });
+
+  canvas.appendChild(el);
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function selectMemory(el, mem) {
+  clearSelected();
+  selectedMemory = { el, mem };
+  el.classList.add('selected');
+}
+
+function clearSelected() {
+  document.querySelectorAll('.memory.selected').forEach(e => e.classList.remove('selected'));
+  selectedMemory = null;
+}
+
+function removeMemory(id) {
+  memories = memories.filter(m => m.id !== id);
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if (el) el.remove();
+  updateEmptyState();
+  scheduleSave();
+}
+
+function updateEmptyState() {
+  const es = document.getElementById('emptyState');
+  if (es) es.style.display = memories.length > 0 ? 'none' : 'block';
+}
+
+// ── DRAG ──
+function makeDraggable(el, mem) {
+  let startX, startY, startLeft, startTop;
+
+  const onStart = (cx, cy) => {
+    startX = cx; startY = cy;
+    startLeft = mem.x; startTop = mem.y;
+    el.style.zIndex = 999;
+    el.style.transition = 'none';
+  };
+
+  const onMove = (cx, cy) => {
+    const dx = cx - startX, dy = cy - startY;
+    mem.x = Math.max(0, startLeft + dx);
+    mem.y = Math.max(0, startTop + dy);
+    el.style.left = mem.x + 'px';
+    el.style.top = mem.y + 'px';
+  };
+
+  const onEnd = () => { el.style.zIndex = ''; scheduleSave(); };
+
+  el.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('delete-btn') || e.target.classList.contains('resize-handle') || e.target.hasAttribute('contenteditable')) return;
+    e.preventDefault();
+    onStart(e.clientX, e.clientY);
+    const mm = e2 => onMove(e2.clientX, e2.clientY);
+    const mu = () => { onEnd(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
+    window.addEventListener('mousemove', mm);
+    window.addEventListener('mouseup', mu);
+  });
+
+  el.addEventListener('touchstart', e => {
+    if (e.target.classList.contains('delete-btn') || e.target.hasAttribute('contenteditable')) return;
+    const t = e.touches[0];
+    onStart(t.clientX, t.clientY);
+    const tm = e2 => { const t2 = e2.touches[0]; onMove(t2.clientX, t2.clientY); };
+    const te = () => { onEnd(); el.removeEventListener('touchmove', tm); el.removeEventListener('touchend', te); };
+    el.addEventListener('touchmove', tm, { passive: true });
+    el.addEventListener('touchend', te);
+  }, { passive: true });
+}
+
+function makeResizable(el, mem, handle) {
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation();
+    const startX = e.clientX;
+    const startW = el.offsetWidth;
+    const mm = e2 => {
+      const newW = Math.max(120, startW + (e2.clientX - startX));
+      el.style.width = newW + 'px';
+      mem.w = newW;
+      if (mem.type === 'sticker') { mem.size = newW; el.style.fontSize = newW + 'px'; }
+    };
+    const mu = () => { scheduleSave(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
+    window.addEventListener('mousemove', mm);
+    window.addEventListener('mouseup', mu);
+  });
+}
+
+// ── STORAGE ──
+// We use localStorage for persistence. Photos are stored as base64 data URLs.
+// All data lives in the browser's local storage for this domain.
+// To share between devices, use the Export/Import buttons (coming via saveAll).
+
+let saveTimer = null;
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveAll, 800); }
+
+function saveAll() {
+  const data = { memories, pageTitle: document.getElementById('pageTitle').value, bgIndex };
+  try {
+    localStorage.setItem('our_memories_book', JSON.stringify(data));
+    showToast();
+  } catch(e) {
+    // localStorage might be full (images are big) — warn user
+    alert('⚠️ Could not save — storage may be full. Try removing some photos or use a smaller image size.');
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('our_memories_book');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    memories = data.memories || [];
+    bgIndex = data.bgIndex || 0;
+    applyBackground();
+    document.querySelectorAll('.bg-opt').forEach((d, i) => d.classList.toggle('active', i === bgIndex));
+    if (data.pageTitle) {
+      pageTitle = data.pageTitle;
+      document.getElementById('pageTitle').value = pageTitle;
+    }
+    memories.forEach(m => renderMemory(m));
+    updateEmptyState();
+  } catch(e) { console.warn('Could not load saved data', e); }
+}
+
+function showToast() {
+  const t = document.getElementById('saveToast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// Keyboard delete
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedMemory && e.target === document.body) {
+    removeMemory(selectedMemory.mem.id);
+    selectedMemory = null;
+  }
+});
+</script>
+</body>
+</html>
