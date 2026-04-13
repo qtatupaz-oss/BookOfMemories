@@ -3,1006 +3,1147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Book of Memories 💌</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<title>Our Book of Memories</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;1,400&family=Dancing+Script:wght@500;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #fdf6ee;
-    --parchment: #f5e6d0;
-    --rose: #c9707a;
-    --rose-light: #f2b5bb;
-    --rose-dark: #8e3d45;
-    --ink: #2c1f1f;
-    --ink-light: #5a3e3e;
-    --gold: #c9a84c;
-    --gold-light: #e8d5a3;
-    --sage: #7a9e7e;
-    --shadow: rgba(44,31,31,0.12);
-  }
+:root{
+  --cream:#fdf8f0;--parchment:#f5e9d0;--paper:#fffdf7;
+  --rose:#c97b84;--rose-l:#f2d0d4;--rose-d:#7a3d44;
+  --gold:#b8915a;--gold-l:#e8d5a3;--gold-d:#7a5a2a;
+  --ink:#2a1f1a;--ink-l:#6b4f45;--ink-ll:#a08070;
+  --sage:#7a9e7e;
+  --cover-l:#8e4a52;--cover-d:#5a1f28;
+  --spine:#6b3038;
+  --sh:rgba(42,31,26,0.13);
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Book dimensions — single source of truth */
+  --book-w: min(920px, 96vw);
+  --book-h: min(640px, 90vh);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Lato',sans-serif;
+  background:radial-gradient(ellipse at 30% 20%,#3a2018 0%,#1a0e08 60%,#0d0805 100%);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+}
 
-  body {
-    background: var(--parchment);
-    font-family: 'Lato', sans-serif;
-    color: var(--ink);
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 10%, #f7e0cc 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 90%, #f2d9c8 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
+/* ── BOOK SHELL ── */
+/* The book is ALWAYS in the DOM at its full size. The cover screen overlays it. */
+#book{
+  position:relative;
+  width:var(--book-w);
+  height:var(--book-h);
+  display:flex;
+  flex-shrink:0;
+  filter:drop-shadow(0 36px 72px rgba(0,0,0,0.68));
+}
+/* spine shadow strip */
+#book::before{
+  content:'';position:absolute;
+  left:calc(50% - 13px);width:26px;height:100%;
+  background:linear-gradient(180deg,var(--spine) 0%,#3a1218 45%,var(--spine) 100%);
+  box-shadow:inset -3px 0 8px rgba(0,0,0,0.45),inset 3px 0 8px rgba(0,0,0,0.45);
+  z-index:50;pointer-events:none;
+}
 
-  /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 48px 24px 32px;
-    position: relative;
-  }
-  header::after {
-    content: '';
-    display: block;
-    width: 200px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 24px auto 0;
-  }
-  .header-subtitle {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.1rem;
-    color: var(--rose);
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-  }
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 6vw, 3.6rem);
-    color: var(--ink);
-    line-height: 1.1;
-    font-weight: 700;
-  }
-  h1 em {
-    font-style: italic;
-    color: var(--rose-dark);
-  }
-  .heart-divider {
-    font-size: 1.4rem;
-    margin: 6px 0;
-    color: var(--rose-light);
-    display: block;
-  }
+/* ── LEFT PAGE (decorative cover) ── */
+#leftPage{
+  width:50%;height:100%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--cover-l),var(--cover-d));
+  border-radius:4px 0 0 4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  position:relative;overflow:hidden;
+}
+#leftPage::before{content:'';position:absolute;inset:12px;border:1.5px solid rgba(255,255,255,0.18);border-radius:2px;pointer-events:none;}
+.lp-rose{position:absolute;opacity:0.2;pointer-events:none;}
+.lp-rose.tr{top:16px;right:16px;}
+.lp-rose.bl{bottom:16px;left:16px;transform:rotate(180deg) scaleX(-1);}
+.lp-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.2rem,2.5vw,2rem);font-style:italic;font-weight:600;color:rgba(255,255,255,0.9);text-align:center;line-height:1.25;z-index:1;padding:0 20px;text-shadow:0 2px 12px rgba(0,0,0,0.4);}
+.lp-heart{color:var(--rose-l);font-size:1.3rem;z-index:1;animation:hpulse 2.5s ease-in-out infinite;}
+@keyframes hpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.lp-sub{font-family:'Dancing Script',cursive;color:rgba(255,255,255,0.42);font-size:0.9rem;z-index:1;}
 
-  /* ── TOOLBAR ── */
-  .toolbar {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 20px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(253,246,238,0.92);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--gold-light);
-    box-shadow: 0 2px 16px var(--shadow);
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border: 1.5px solid var(--rose-light);
-    border-radius: 40px;
-    background: white;
-    color: var(--rose-dark);
-    font-family: 'Lato', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-  .btn:hover {
-    background: var(--rose);
-    color: white;
-    border-color: var(--rose);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(201,112,122,0.3);
-  }
-  .btn.primary {
-    background: var(--rose);
-    color: white;
-    border-color: var(--rose);
-  }
-  .btn.primary:hover {
-    background: var(--rose-dark);
-    border-color: var(--rose-dark);
-  }
+/* ── COVER OVERLAY ── */
+/* Sits on top of the whole book at z-index 100. Dismissed on click. */
+#coverOverlay{
+  position:absolute;inset:0;
+  z-index:100;
+  border-radius:4px;
+  cursor:pointer;
+  /* Fades out when .dismissed is added */
+  transition:opacity 0.5s ease, visibility 0.5s ease;
+  opacity:1;visibility:visible;
+}
+#coverOverlay.dismissed{opacity:0;visibility:hidden;pointer-events:none;}
 
-  /* ── CANVAS ── */
-  #canvas {
-    min-height: 70vh;
-    padding: 32px 24px 80px;
-    max-width: 1100px;
-    margin: 0 auto;
-    position: relative;
-  }
-  .empty-state {
-    text-align: center;
-    padding: 80px 24px;
-    color: var(--ink-light);
-    pointer-events: none;
-  }
-  .empty-state .big-icon { font-size: 4rem; margin-bottom: 16px; display: block; }
-  .empty-state h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    font-style: italic;
-    margin-bottom: 8px;
-  }
-  .empty-state p { font-weight: 300; opacity: 0.7; }
+/* The overlay shows a full-book-sized cover illustration */
+#coverOverlay .co-left{
+  position:absolute;left:0;top:0;width:50%;height:100%;
+  background:linear-gradient(135deg,var(--cover-l),var(--cover-d));
+  border-radius:4px 0 0 4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  overflow:hidden;
+}
+#coverOverlay .co-left::before{content:'';position:absolute;inset:12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:2px;pointer-events:none;}
+#coverOverlay .co-right{
+  position:absolute;right:0;top:0;width:50%;height:100%;
+  background:linear-gradient(160deg,#4a2020,#2e1010);
+  border-radius:0 4px 4px 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+}
+.co-hint{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.32);font-family:'Lato',sans-serif;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:0.32;}50%{opacity:0.72;}}
+.co-open-text{font-family:'Dancing Script',cursive;color:rgba(255,255,255,0.5);font-size:1.1rem;}
 
-  /* ── MEMORY CARDS ── */
-  .memory {
-    position: absolute;
-    cursor: grab;
-    user-select: none;
-    transition: box-shadow 0.2s;
-    touch-action: none;
-  }
-  .memory:active { cursor: grabbing; }
-  .memory.selected { outline: 2px dashed var(--rose); outline-offset: 4px; }
+/* ── RIGHT PAGE ── */
+#rightPage{
+  width:50%;height:100%;flex-shrink:0;
+  background:var(--paper);
+  border-radius:0 4px 4px 0;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset -5px 0 18px rgba(0,0,0,0.07),inset 5px 0 10px rgba(0,0,0,0.05);
+}
+/* ruled lines */
+#rightPage::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(transparent,transparent 27px,rgba(184,145,90,0.07) 28px);
+  pointer-events:none;z-index:0;
+}
 
-  /* Photo card */
-  .memory-photo {
-    background: white;
-    padding: 12px 12px 36px;
-    box-shadow: 3px 4px 18px var(--shadow), 0 1px 4px rgba(0,0,0,0.06);
-    transform: rotate(var(--tilt, -1.5deg));
-    max-width: 260px;
-  }
-  .memory-photo img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-  }
-  .memory-photo .caption {
-    font-family: 'Dancing Script', cursive;
-    font-size: 0.95rem;
-    color: var(--ink-light);
-    text-align: center;
-    margin-top: 8px;
-    outline: none;
-    min-height: 24px;
-  }
-  .memory-photo .tape {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%) rotate(-2deg);
-    width: 56px;
-    height: 20px;
-    background: rgba(201,168,76,0.35);
-    border-radius: 2px;
-  }
+/* ── TABS COLUMN ── */
+#tabsCol{
+  position:absolute;top:0;right:0;bottom:0;width:34px;
+  display:flex;flex-direction:column;
+  z-index:20;
+  border-left:1px solid rgba(184,145,90,0.22);
+  background:rgba(250,242,228,0.7);
+}
+#tabsList{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  display:flex;flex-direction:column;
+}
+#tabsList::-webkit-scrollbar{width:2px;}
+#tabsList::-webkit-scrollbar-thumb{background:var(--rose-l);}
+.ptab{
+  writing-mode:vertical-rl;
+  font-family:'Dancing Script',cursive;
+  font-size:0.62rem;color:var(--ink-ll);
+  padding:8px 3px;min-height:44px;max-height:80px;
+  cursor:pointer;flex-shrink:0;
+  border-bottom:1px solid rgba(184,145,90,0.15);
+  transition:background 0.15s,color 0.15s;
+  text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ptab:hover{background:var(--rose-l);color:var(--rose-d);}
+.ptab.active{background:var(--rose-l);color:var(--rose-d);border-left:2px solid var(--rose);}
+#addTabBtn{
+  height:40px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;line-height:1;
+  cursor:pointer;
+  color:var(--gold-d);
+  background:rgba(184,145,90,0.12);
+  border-top:1px solid var(--gold-l);
+  transition:background 0.15s,color 0.15s;
+  user-select:none;
+}
+#addTabBtn:hover{background:var(--gold-l);color:var(--gold-d);}
 
-  /* Note card */
-  .memory-note {
-    background: var(--note-bg, #fff9e6);
-    padding: 20px;
-    box-shadow: 3px 4px 18px var(--shadow);
-    border-radius: 2px;
-    min-width: 180px;
-    max-width: 260px;
-    transform: rotate(var(--tilt, 1deg));
-    border-left: 4px solid var(--note-accent, var(--gold));
-  }
-  .memory-note .note-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    line-height: 1.6;
-    font-style: italic;
-    color: var(--ink);
-    outline: none;
-    min-height: 60px;
-    white-space: pre-wrap;
-  }
-  .memory-note .note-date {
-    font-family: 'Lato', sans-serif;
-    font-size: 0.7rem;
-    color: var(--ink-light);
-    opacity: 0.6;
-    margin-top: 12px;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+/* ── PAGE HOST ── */
+/* Contains all .spage elements and the no-pages message */
+#pageHost{
+  position:absolute;
+  top:0;left:0;right:34px;bottom:0; /* leaves room for tabs */
+  overflow:hidden;
+}
+.spage{
+  position:absolute;inset:0;
+  display:none;  /* hidden until .active */
+}
+.spage.active{display:block;}
 
-  /* Sticker */
-  .memory-sticker {
-    font-size: var(--sticker-size, 3rem);
-    line-height: 1;
-    text-align: center;
-    padding: 8px;
-    user-select: none;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.15));
-    min-width: 60px;
-  }
+/* page backgrounds */
+.spage[data-bg="cream"]{background:#fdf8f0;}
+.spage[data-bg="rose"]{background:linear-gradient(145deg,#fdf0f2,#fce4ec);}
+.spage[data-bg="sage"]{background:linear-gradient(145deg,#f0f5f0,#dde8dc);}
+.spage[data-bg="sky"]{background:linear-gradient(145deg,#f0f6fc,#ddeef8);}
+.spage[data-bg="lavender"]{background:linear-gradient(145deg,#f5f0fc,#ede0f8);}
+.spage[data-bg="warm"]{background:linear-gradient(145deg,#fdf8ed,#f5e8cc);}
+.spage[data-bg="dark"]{background:linear-gradient(145deg,#1e1620,#2a1828);}
 
-  /* Label */
-  .memory-label {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.4rem;
-    color: var(--label-color, var(--rose-dark));
-    padding: 6px 12px;
-    outline: none;
-    min-width: 80px;
-    text-align: center;
-    white-space: nowrap;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
-  }
+/* no pages message — inside pageHost, pointer-events:none so tabs show through */
+#noPageMsg{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:24px;text-align:center;
+  opacity:0.42;pointer-events:none; /* let clicks pass to tabs */
+}
+#noPageMsg p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--ink-l);}
 
-  /* Delete button on cards */
-  .delete-btn {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 22px;
-    height: 22px;
-    background: var(--rose);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    line-height: 22px;
-    text-align: center;
-    cursor: pointer;
-    display: none;
-    z-index: 10;
-  }
-  .memory.selected .delete-btn { display: block; }
-  .delete-btn:hover { background: var(--rose-dark); }
+/* page title bar */
+.pbar{
+  position:absolute;top:0;left:0;right:0;height:40px;
+  display:flex;align-items:center;gap:6px;padding:0 10px;
+  border-bottom:1px solid rgba(184,145,90,0.2);
+  background:inherit;z-index:5;
+}
+.ptitle{
+  flex:1;font-family:'Dancing Script',cursive;font-size:1.05rem;
+  color:var(--rose-d);border:none;background:transparent;outline:none;min-width:0;
+}
+.ptitle::placeholder{color:var(--ink-ll);opacity:0.4;}
+.pbarbtn{
+  font-size:0.62rem;letter-spacing:0.07em;text-transform:uppercase;
+  padding:3px 7px;border-radius:14px;cursor:pointer;white-space:nowrap;
+  font-family:'Lato',sans-serif;transition:all 0.15s;
+  border:1px solid var(--gold-l);color:var(--ink-ll);background:transparent;
+}
+.pbarbtn:hover{background:var(--gold-l);color:var(--gold-d);}
+.pbarbtn.del{border-color:var(--rose-l);color:var(--rose);}
+.pbarbtn.del:hover{background:var(--rose-l);}
 
-  /* Resize handle */
-  .resize-handle {
-    position: absolute;
-    bottom: -4px;
-    right: -4px;
-    width: 14px;
-    height: 14px;
-    background: var(--rose-light);
-    border-radius: 2px;
-    cursor: se-resize;
-    display: none;
-  }
-  .memory.selected .resize-handle { display: block; }
+/* page canvas */
+.pcanvas{
+  position:absolute;top:40px;left:0;right:0;bottom:0;
+  overflow:hidden;
+}
 
-  /* ── MODALS ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(44,31,31,0.45);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    animation: fadeIn 0.2s ease;
-  }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal {
-    background: var(--cream);
-    border-radius: 4px;
-    padding: 36px;
-    max-width: 440px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(44,31,31,0.3);
-    position: relative;
-    animation: slideUp 0.25s ease;
-  }
-  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .modal h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-style: italic;
-    margin-bottom: 24px;
-    color: var(--rose-dark);
-  }
-  .modal label {
-    display: block;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-light);
-    margin-bottom: 6px;
-  }
-  .modal input[type="text"],
-  .modal textarea,
-  .modal select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--gold-light);
-    border-radius: 3px;
-    background: white;
-    font-family: 'Lato', sans-serif;
-    font-size: 0.95rem;
-    color: var(--ink);
-    margin-bottom: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .modal input:focus, .modal textarea:focus, .modal select:focus {
-    border-color: var(--rose-light);
-  }
-  .modal textarea { resize: vertical; min-height: 90px; }
-  .color-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-  .color-swatch {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.15s;
-  }
-  .color-swatch:hover, .color-swatch.active { transform: scale(1.2); border-color: var(--ink); }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
-  .close-modal {
-    position: absolute;
-    top: 14px; right: 16px;
-    background: none; border: none;
-    font-size: 1.3rem; cursor: pointer;
-    color: var(--ink-light);
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .close-modal:hover { opacity: 1; }
+/* empty page hint */
+.pempty{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;pointer-events:none;opacity:0.3;
+}
+.pempty p{font-family:'Dancing Script',cursive;font-size:0.95rem;color:var(--ink-l);}
 
-  /* Sticker picker */
-  .sticker-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-    max-height: 220px;
-    overflow-y: auto;
-    padding: 8px 0;
-    margin-bottom: 16px;
-  }
-  .sticker-option {
-    font-size: 1.6rem;
-    text-align: center;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 4px;
-    transition: background 0.15s, transform 0.15s;
-    line-height: 1;
-  }
-  .sticker-option:hover { background: var(--rose-light); transform: scale(1.2); }
-  .sticker-option.selected { background: var(--rose-light); }
+/* ── DECORATIONS ── */
+.deco{
+  position:absolute;cursor:grab;user-select:none;touch-action:none;
+  transform-origin:center center;
+}
+.deco:active{cursor:grabbing;}
+.deco.sel{outline:1.5px dashed var(--rose);outline-offset:5px;}
+.deco .xbtn,.deco .rbtn,.deco .sbtn{
+  position:absolute;width:20px;height:20px;border-radius:50%;
+  font-size:0.68rem;line-height:20px;text-align:center;
+  border:none;display:none;z-index:20;color:#fff;cursor:pointer;
+}
+.deco.sel .xbtn,.deco.sel .rbtn,.deco.sel .sbtn{display:block;}
+.deco .xbtn{top:-9px;right:-9px;background:var(--rose);}
+.deco .rbtn{bottom:-9px;left:-9px;background:var(--gold);cursor:grab;}
+.deco .sbtn{bottom:-9px;right:-9px;background:var(--sage);cursor:se-resize;}
 
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 24px;
-    font-family: 'Dancing Script', cursive;
-    font-size: 1rem;
-    color: var(--rose-light);
-  }
+.deco-photo{background:#fff;padding:9px 9px 32px;box-shadow:2px 4px 14px var(--sh);}
+.deco-photo img{width:100%;height:150px;object-fit:cover;display:block;}
+.deco-photo .pcap{font-family:'Dancing Script',cursive;font-size:0.85rem;color:var(--ink-l);text-align:center;margin-top:5px;outline:none;min-height:18px;}
 
-  /* Upload area */
-  .upload-area {
-    border: 2px dashed var(--gold-light);
-    border-radius: 4px;
-    padding: 28px;
-    text-align: center;
-    cursor: pointer;
-    margin-bottom: 16px;
-    transition: all 0.2s;
-    color: var(--ink-light);
-    font-size: 0.9rem;
-  }
-  .upload-area:hover { border-color: var(--rose-light); background: rgba(201,112,122,0.04); }
-  .upload-area .upload-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
-  #fileInput { display: none; }
+.deco-note{padding:14px 16px;box-shadow:2px 4px 14px var(--sh);min-width:140px;}
+.deco-note .nbody{font-family:'EB Garamond',serif;font-size:0.9rem;font-style:italic;color:var(--ink);outline:none;min-height:44px;line-height:1.65;white-space:pre-wrap;}
+.deco-note .ndate{font-size:0.62rem;color:var(--ink-ll);margin-top:8px;letter-spacing:0.08em;text-transform:uppercase;font-family:'Lato',sans-serif;}
 
-  /* Tooltip */
-  .tip {
-    font-size: 0.72rem;
-    color: var(--ink-light);
-    opacity: 0.6;
-    margin-bottom: 16px;
-  }
+.deco-svg svg{display:block;}
+.deco-label{font-family:'Dancing Script',cursive;outline:none;white-space:nowrap;padding:3px 6px;}
 
-  /* Page title area */
-  .page-title-area {
-    text-align: center;
-    padding: 12px 24px 28px;
-  }
-  #pageTitle {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.4rem;
-    color: var(--rose);
-    border: none;
-    background: transparent;
-    text-align: center;
-    outline: none;
-    border-bottom: 1px dashed var(--rose-light);
-    padding: 4px 16px;
-    width: auto;
-    min-width: 200px;
-    transition: border-color 0.2s;
-  }
-  #pageTitle:focus { border-bottom-color: var(--rose); }
+/* ── TOOLBAR ── */
+#toolbar{
+  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  display:none;gap:7px;flex-wrap:wrap;justify-content:center;
+  padding:9px 16px;
+  background:rgba(20,10,5,0.9);backdrop-filter:blur(14px);
+  border-radius:50px;border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:200;
+}
+#toolbar.vis{display:flex;}
+.tbtn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 13px;border-radius:28px;
+  border:1px solid rgba(255,255,255,0.14);
+  background:transparent;color:rgba(255,255,255,0.78);
+  font-family:'Lato',sans-serif;font-size:0.73rem;
+  letter-spacing:0.06em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.18s;white-space:nowrap;
+}
+.tbtn:hover{background:rgba(201,123,132,0.35);border-color:var(--rose-l);color:#fff;}
 
-  /* Background chooser */
-  .bg-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-  .bg-opt {
-    width: 48px;
-    height: 38px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.15s, border-color 0.15s;
-  }
-  .bg-opt:hover, .bg-opt.active { transform: scale(1.1); border-color: var(--ink); }
+/* ── MODALS ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(22,12,6,0.62);
+  backdrop-filter:blur(6px);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.overlay.vis{display:flex;}
+.modal{
+  background:var(--cream);border-radius:4px;padding:28px 30px;
+  max-width:450px;width:100%;
+  box-shadow:0 22px 60px rgba(0,0,0,0.45);
+  position:relative;animation:msu 0.2s ease;
+}
+@keyframes msu{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic;color:var(--rose-d);margin-bottom:18px;}
+.modal label{display:block;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-l);margin-bottom:4px;}
+.modal input[type=text],.modal textarea{
+  width:100%;padding:8px 11px;
+  border:1.5px solid var(--gold-l);border-radius:3px;
+  background:#fff;font-family:'EB Garamond',serif;font-size:0.97rem;color:var(--ink);
+  margin-bottom:13px;outline:none;transition:border-color 0.18s;
+}
+.modal input:focus,.modal textarea:focus{border-color:var(--rose-l);}
+.modal textarea{resize:vertical;min-height:76px;}
+.mclose{position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-ll);transition:color 0.18s;}
+.mclose:hover{color:var(--rose);}
+.mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+.mbtn{padding:7px 16px;border-radius:28px;border:1.5px solid var(--rose-l);background:#fff;color:var(--rose-d);font-family:'Lato',sans-serif;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.18s;}
+.mbtn:hover,.mbtn.pri{background:var(--rose);color:#fff;border-color:var(--rose);}
+.mbtn.pri:hover{background:var(--rose-d);}
 
-  /* Save notification */
-  .save-toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--ink);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 40px;
-    font-size: 0.82rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    pointer-events: none;
-    z-index: 9999;
-  }
-  .save-toast.show { opacity: 1; transform: translateY(0); }
+.sw-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;}
+.sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform 0.14s;}
+.sw:hover,.sw.on{transform:scale(1.22);border-color:var(--ink);}
+
+.deco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:270px;overflow-y:auto;margin-bottom:13px;}
+.dthumb{border:1.5px solid var(--gold-l);border-radius:4px;padding:8px 4px;cursor:pointer;text-align:center;background:#fff;transition:all 0.18s;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.dthumb:hover,.dthumb.on{border-color:var(--rose);background:var(--rose-l);}
+.dthumb svg{pointer-events:none;}
+.dthumb span{font-size:0.58rem;color:var(--ink-ll);font-family:'Lato',sans-serif;letter-spacing:0.05em;text-transform:uppercase;}
+
+.upload-zone{border:2px dashed var(--gold-l);border-radius:4px;padding:20px;text-align:center;cursor:pointer;margin-bottom:13px;transition:all 0.18s;color:var(--ink-ll);font-size:0.86rem;}
+.upload-zone:hover{border-color:var(--rose-l);background:rgba(201,123,132,0.04);}
+.uico{font-size:1.8rem;display:block;margin-bottom:5px;}
+#fileIn{display:none;}
+
+.bg-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;}
+.bgopt{width:42px;height:32px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:transform 0.14s;}
+.bgopt:hover,.bgopt.on{transform:scale(1.12);border-color:var(--ink);}
+
+/* toast */
+#toast{
+  position:fixed;bottom:66px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:#fff;padding:7px 18px;border-radius:28px;
+  font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;
+  font-family:'Lato',sans-serif;opacity:0;transition:all 0.28s;z-index:1000;
+  pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<header>
-  <p class="header-subtitle">A little something just for us 🌸</p>
-  <h1>Our <em>Book of</em></h1>
-  <span class="heart-divider">♡</span>
-  <h1><em>Memories</em></h1>
-</header>
+<div id="book">
 
-<div class="page-title-area">
-  <input id="pageTitle" type="text" placeholder="Name this chapter..." maxlength="60" />
-</div>
-
-<div class="toolbar">
-  <button class="btn primary" onclick="openModal('photoModal')">📷 Add Photo</button>
-  <button class="btn" onclick="openModal('noteModal')">✏️ Add Note</button>
-  <button class="btn" onclick="openModal('stickerModal')">✨ Sticker</button>
-  <button class="btn" onclick="openModal('labelModal')">🏷 Label</button>
-  <button class="btn" onclick="openModal('bgModal')">🎨 Background</button>
-  <button class="btn" onclick="clearSelected()">🗂 Deselect</button>
-  <button class="btn" onclick="saveAll()">💾 Save</button>
-</div>
-
-<div id="canvas">
-  <div class="empty-state" id="emptyState">
-    <span class="big-icon">💌</span>
-    <h2>Your scrapbook is empty</h2>
-    <p>Add photos, notes, stickers, or labels to fill it with love.</p>
+  <!-- LEFT PAGE: static decorative cover -->
+  <div id="leftPage">
+    <svg class="lp-rose tr" width="110" height="110" viewBox="0 0 100 100"><use href="#svgRose"/></svg>
+    <svg class="lp-rose bl" width="80" height="80" viewBox="0 0 100 100"><use href="#svgRose"/></svg>
+    <div class="lp-title">Our Book<br>of Memories</div>
+    <span class="lp-heart">♡</span>
+    <div class="lp-sub">a scrapbook for two</div>
   </div>
-</div>
 
-<!-- ── PHOTO MODAL ── -->
-<div id="photoModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="close-modal" onclick="closeModal('photoModal')">×</button>
-    <h2>Add a Photo 📷</h2>
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <span class="upload-icon">🖼️</span>
-      Click to choose a photo from your device
-    </div>
-    <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" />
-    <label>Caption (optional)</label>
-    <input type="text" id="photoCaption" placeholder="A wonderful day..." />
-    <p class="tip">💡 Tip: Photos are stored inside the saved file as base64 data.</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('photoModal')">Cancel</button>
-      <button class="btn primary" onclick="addPhoto()">Add to Page</button>
-    </div>
-  </div>
-</div>
+  <!-- RIGHT PAGE: tabs + page host -->
+  <div id="rightPage">
 
-<!-- ── NOTE MODAL ── -->
-<div id="noteModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="close-modal" onclick="closeModal('noteModal')">×</button>
-    <h2>Write a Note ✏️</h2>
-    <label>Your message</label>
-    <textarea id="noteText" placeholder="Remember when we..."></textarea>
-    <label>Note color</label>
-    <div class="color-row" id="noteColors"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('noteModal')">Cancel</button>
-      <button class="btn primary" onclick="addNote()">Add to Page</button>
+    <!-- Page host: all pages live here, bounded to exclude tabs -->
+    <div id="pageHost">
+
+      <!-- No-pages message: pointer-events:none so tabs are clickable through it -->
+      <div id="noPageMsg">
+        <svg width="50" height="50" viewBox="0 0 100 100" style="opacity:0.5"><use href="#svgRose"/></svg>
+        <p>Click <strong style="color:var(--gold)">+</strong> on the right edge<br>to add your first page</p>
+      </div>
+
+    </div><!-- /pageHost -->
+
+    <!-- Tabs column: OUTSIDE pageHost so it's never obscured -->
+    <div id="tabsCol">
+      <div id="tabsList"></div>
+      <div id="addTabBtn" onclick="addPage()" title="Add new page">+</div>
+    </div>
+
+  </div><!-- /rightPage -->
+
+  <!-- COVER OVERLAY: sits on top of the full book, click to dismiss -->
+  <div id="coverOverlay" onclick="openBook()">
+    <div class="co-left">
+      <svg style="position:absolute;top:14px;right:14px;opacity:0.22;pointer-events:none" width="100" height="100" viewBox="0 0 100 100"><use href="#svgRose"/></svg>
+      <svg style="position:absolute;bottom:14px;left:14px;opacity:0.18;transform:rotate(180deg) scaleX(-1);pointer-events:none" width="80" height="80" viewBox="0 0 100 100"><use href="#svgRose"/></svg>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.3rem,2.6vw,2.1rem);font-style:italic;font-weight:600;color:rgba(255,255,255,0.92);text-align:center;line-height:1.25;z-index:1;padding:0 22px;text-shadow:0 2px 12px rgba(0,0,0,0.4);">Our Book<br>of Memories</div>
+      <span style="color:#f2d0d4;font-size:1.3rem;z-index:1;animation:hpulse 2.5s ease-in-out infinite;">♡</span>
+      <div style="font-family:'Dancing Script',cursive;color:rgba(255,255,255,0.4);font-size:0.9rem;z-index:1;">a scrapbook for two</div>
+    </div>
+    <div class="co-right">
+      <div class="co-open-text">Open the book</div>
+      <div class="co-hint">tap anywhere to begin</div>
     </div>
   </div>
+
+</div><!-- /book -->
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <button class="tbtn" onclick="openM('mPhoto')">📷 Photo</button>
+  <button class="tbtn" onclick="openM('mNote')">✏️ Note</button>
+  <button class="tbtn" onclick="openM('mDeco')">🎨 Decorate</button>
+  <button class="tbtn" onclick="openM('mLabel')">🏷 Label</button>
+  <button class="tbtn" onclick="saveAll()">💾 Save</button>
 </div>
 
-<!-- ── STICKER MODAL ── -->
-<div id="stickerModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="close-modal" onclick="closeModal('stickerModal')">×</button>
-    <h2>Pick a Sticker ✨</h2>
-    <div class="sticker-grid" id="stickerGrid"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('stickerModal')">Cancel</button>
-      <button class="btn primary" onclick="addSticker()">Add Sticker</button>
-    </div>
+<!-- MODALS -->
+<div id="mPhoto" class="overlay">
+<div class="modal">
+  <button class="mclose" onclick="closeM('mPhoto')">×</button>
+  <h2>Add a Photo</h2>
+  <div class="upload-zone" onclick="document.getElementById('fileIn').click()">
+    <span class="uico">🖼️</span>Click to choose a photo from your device
   </div>
-</div>
-
-<!-- ── LABEL MODAL ── -->
-<div id="labelModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="close-modal" onclick="closeModal('labelModal')">×</button>
-    <h2>Add a Label 🏷</h2>
-    <label>Label text</label>
-    <input type="text" id="labelText" placeholder="Summer 2024 ♡" />
-    <label>Color</label>
-    <div class="color-row" id="labelColors"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('labelModal')">Cancel</button>
-      <button class="btn primary" onclick="addLabel()">Add Label</button>
-    </div>
+  <input type="file" id="fileIn" accept="image/*" onchange="handleFile(event)"/>
+  <label>Caption (optional)</label>
+  <input type="text" id="pCap" placeholder="A wonderful memory…"/>
+  <div class="mactions">
+    <button class="mbtn" onclick="closeM('mPhoto')">Cancel</button>
+    <button class="mbtn pri" onclick="placePhoto()">Add to Page</button>
   </div>
-</div>
+</div></div>
 
-<!-- ── BACKGROUND MODAL ── -->
-<div id="bgModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="close-modal" onclick="closeModal('bgModal')">×</button>
-    <h2>Choose a Background 🎨</h2>
-    <div class="bg-options" id="bgOptions"></div>
-    <div class="modal-actions">
-      <button class="btn primary" onclick="closeModal('bgModal')">Done</button>
-    </div>
+<div id="mNote" class="overlay">
+<div class="modal">
+  <button class="mclose" onclick="closeM('mNote')">×</button>
+  <h2>Write a Note</h2>
+  <label>Your message</label>
+  <textarea id="noteTxt" placeholder="Remember when we…"></textarea>
+  <label>Paper color</label>
+  <div class="sw-row" id="noteColors"></div>
+  <div class="mactions">
+    <button class="mbtn" onclick="closeM('mNote')">Cancel</button>
+    <button class="mbtn pri" onclick="placeNote()">Add to Page</button>
   </div>
-</div>
+</div></div>
 
-<div id="saveToast" class="save-toast">✓ Saved!</div>
+<div id="mDeco" class="overlay">
+<div class="modal">
+  <button class="mclose" onclick="closeM('mDeco')">×</button>
+  <h2>Add a Decoration</h2>
+  <div class="deco-grid" id="decoGrid"></div>
+  <div class="mactions">
+    <button class="mbtn" onclick="closeM('mDeco')">Cancel</button>
+    <button class="mbtn pri" onclick="placeDeco()">Add to Page</button>
+  </div>
+</div></div>
 
-<footer>made with love, just for the two of us ♡</footer>
+<div id="mLabel" class="overlay">
+<div class="modal">
+  <button class="mclose" onclick="closeM('mLabel')">×</button>
+  <h2>Add a Label</h2>
+  <label>Text</label>
+  <input type="text" id="labelTxt" placeholder="Summer 2024 ♡"/>
+  <label>Color</label>
+  <div class="sw-row" id="labelColors"></div>
+  <div class="mactions">
+    <button class="mbtn" onclick="closeM('mLabel')">Cancel</button>
+    <button class="mbtn pri" onclick="placeLabel()">Add Label</button>
+  </div>
+</div></div>
+
+<div id="mBg" class="overlay">
+<div class="modal">
+  <button class="mclose" onclick="closeM('mBg')">×</button>
+  <h2>Page Background</h2>
+  <div class="bg-row" id="bgRow"></div>
+  <div class="mactions">
+    <button class="mbtn pri" onclick="closeM('mBg')">Done</button>
+  </div>
+</div></div>
+
+<div id="toast"></div>
+
+<!-- ── ALL SVG DEFS ── -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <!-- Rose -->
+  <g id="svgRose">
+    <circle cx="50" cy="50" r="8" fill="#c97b84" opacity="0.9"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#c97b84" opacity="0.85" transform="rotate(0 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#d4919a" opacity="0.8" transform="rotate(45 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#c97b84" opacity="0.75" transform="rotate(90 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#bf6b74" opacity="0.8" transform="rotate(135 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#c97b84" opacity="0.75" transform="rotate(180 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#d4919a" opacity="0.7" transform="rotate(225 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#c97b84" opacity="0.7" transform="rotate(270 50 50)"/>
+    <ellipse cx="50" cy="32" rx="10" ry="14" fill="#bf6b74" opacity="0.75" transform="rotate(315 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.9" transform="rotate(22.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.85" transform="rotate(67.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.8" transform="rotate(112.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.8" transform="rotate(157.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.85" transform="rotate(202.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.8" transform="rotate(247.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.75" transform="rotate(292.5 50 50)"/>
+    <ellipse cx="50" cy="38" rx="7" ry="10" fill="#e8a8b0" opacity="0.8" transform="rotate(337.5 50 50)"/>
+    <ellipse cx="38" cy="72" rx="8" ry="20" fill="#7a9e7e" opacity="0.85" transform="rotate(-15 38 72)"/>
+    <ellipse cx="55" cy="76" rx="9" ry="18" fill="#5a8260" opacity="0.8" transform="rotate(10 55 76)"/>
+    <path d="M50 58 Q44 68 38 72" stroke="#5a8260" stroke-width="2" fill="none"/>
+    <path d="M50 58 Q54 70 55 76" stroke="#5a8260" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Daisy -->
+  <g id="svgDaisy">
+    <circle cx="50" cy="50" r="10" fill="#f5c842"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.95" transform="rotate(0 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(30 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(60 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.92" transform="rotate(90 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(120 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.88" transform="rotate(150 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(180 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(210 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.88" transform="rotate(240 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(270 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.9" transform="rotate(300 50 50)"/>
+    <ellipse cx="50" cy="26" rx="7" ry="14" fill="#fff" opacity="0.92" transform="rotate(330 50 50)"/>
+    <circle cx="50" cy="50" r="10" fill="#f5c842"/>
+    <circle cx="50" cy="50" r="6" fill="#e8a820"/>
+  </g>
+
+  <!-- Lavender sprig -->
+  <g id="svgLavender">
+    <path d="M50 90 Q48 70 50 50 Q52 70 50 90" stroke="#7a6e9e" stroke-width="3" fill="none"/>
+    <path d="M50 50 Q40 40 36 28" stroke="#7a6e9e" stroke-width="2" fill="none"/>
+    <path d="M50 50 Q60 40 64 28" stroke="#7a6e9e" stroke-width="2" fill="none"/>
+    <ellipse cx="36" cy="28" rx="6" ry="10" fill="#a89ecc" opacity="0.9" transform="rotate(-20 36 28)"/>
+    <ellipse cx="64" cy="28" rx="6" ry="10" fill="#a89ecc" opacity="0.9" transform="rotate(20 64 28)"/>
+    <ellipse cx="50" cy="15" rx="6" ry="11" fill="#b8aedd" opacity="0.9"/>
+    <ellipse cx="36" cy="32" rx="4" ry="7" fill="#c8beed" opacity="0.7" transform="rotate(-20 36 32)"/>
+    <ellipse cx="64" cy="32" rx="4" ry="7" fill="#c8beed" opacity="0.7" transform="rotate(20 64 32)"/>
+    <ellipse cx="50" cy="22" rx="4" ry="7" fill="#c8beed" opacity="0.7"/>
+    <ellipse cx="42" cy="60" rx="5" ry="12" fill="#7a9e7e" opacity="0.7" transform="rotate(-15 42 60)"/>
+    <ellipse cx="58" cy="62" rx="5" ry="12" fill="#7a9e7e" opacity="0.65" transform="rotate(15 58 62)"/>
+  </g>
+
+  <!-- Bow / Ribbon -->
+  <g id="svgBow">
+    <path d="M50 50 Q30 30 15 40 Q25 50 50 50" fill="#c97b84" opacity="0.9"/>
+    <path d="M50 50 Q70 30 85 40 Q75 50 50 50" fill="#bf6b74" opacity="0.9"/>
+    <path d="M50 50 Q30 70 15 60 Q25 50 50 50" fill="#d4919a" opacity="0.85"/>
+    <path d="M50 50 Q70 70 85 60 Q75 50 50 50" fill="#c97b84" opacity="0.85"/>
+    <path d="M50 50 Q48 62 45 78" stroke="#c97b84" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M50 50 Q52 62 55 78" stroke="#bf6b74" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="7" fill="#e8a8b0"/>
+    <circle cx="50" cy="50" r="4" fill="#c97b84"/>
+  </g>
+
+  <!-- Cherry blossom branch -->
+  <g id="svgBlossom">
+    <path d="M20 90 Q35 70 50 55 Q65 40 80 20" stroke="#8e5a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M50 55 Q40 45 30 38" stroke="#8e5a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M65 42 Q72 35 78 28" stroke="#8e5a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- blossoms -->
+    <g transform="translate(28,36)">
+      <circle cx="0" cy="0" r="4" fill="#f7c0cc"/><circle cx="7" cy="-3" r="4" fill="#f2aabb"/>
+      <circle cx="3" cy="6" r="4" fill="#f7c0cc"/><circle cx="-6" cy="3" r="4" fill="#f2aabb"/>
+      <circle cx="0" cy="0" r="2" fill="#f5c842"/>
+    </g>
+    <g transform="translate(62,24)">
+      <circle cx="0" cy="0" r="4" fill="#f7c0cc"/><circle cx="6" cy="-4" r="3.5" fill="#f2aabb"/>
+      <circle cx="2" cy="6" r="3.5" fill="#f7c0cc"/><circle cx="-5" cy="2" r="3.5" fill="#f2aabb"/>
+      <circle cx="0" cy="0" r="2" fill="#f5c842"/>
+    </g>
+    <g transform="translate(80,18)">
+      <circle cx="0" cy="0" r="3.5" fill="#f7c0cc"/><circle cx="5" cy="-3" r="3" fill="#f2aabb"/>
+      <circle cx="2" cy="5" r="3" fill="#f7c0cc"/><circle cx="-4" cy="2" r="3" fill="#f2aabb"/>
+      <circle cx="0" cy="0" r="2" fill="#f5c842"/>
+    </g>
+    <g transform="translate(46,56)">
+      <circle cx="0" cy="0" r="3" fill="#f7c0cc"/><circle cx="5" cy="-2" r="3" fill="#f2aabb"/>
+      <circle cx="0" cy="0" r="1.5" fill="#f5c842"/>
+    </g>
+    <!-- falling petals -->
+    <ellipse cx="38" cy="68" rx="3" ry="5" fill="#f7c0cc" opacity="0.7" transform="rotate(-30 38 68)"/>
+    <ellipse cx="70" cy="45" rx="2.5" ry="4" fill="#f2aabb" opacity="0.6" transform="rotate(20 70 45)"/>
+  </g>
+
+  <!-- Washi tape strip -->
+  <g id="svgTape">
+    <rect x="5" y="30" width="90" height="40" rx="3" fill="#f5c842" opacity="0.45"/>
+    <rect x="5" y="30" width="90" height="40" rx="3" fill="url(#tapePattern)" opacity="0.5"/>
+    <defs>
+      <pattern id="tapePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="10" cy="10" r="3" fill="#c97b84" opacity="0.4"/>
+        <circle cx="0" cy="0" r="2" fill="#c97b84" opacity="0.3"/>
+        <circle cx="20" cy="20" r="2" fill="#c97b84" opacity="0.3"/>
+      </pattern>
+    </defs>
+  </g>
+
+  <!-- Corner flourish -->
+  <g id="svgCorner">
+    <path d="M10 90 Q10 10 90 10" stroke="#c9a84c" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <path d="M10 90 Q15 50 20 30 Q30 15 90 10" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="10" cy="90" r="5" fill="#c9a84c" opacity="0.7"/>
+    <circle cx="90" cy="10" r="5" fill="#c9a84c" opacity="0.7"/>
+    <ellipse cx="30" cy="40" rx="5" ry="8" fill="#c97b84" opacity="0.6" transform="rotate(-40 30 40)"/>
+    <ellipse cx="20" cy="58" rx="5" ry="8" fill="#c97b84" opacity="0.5" transform="rotate(-60 20 58)"/>
+    <ellipse cx="55" cy="22" rx="5" ry="8" fill="#c97b84" opacity="0.55" transform="rotate(-20 55 22)"/>
+  </g>
+
+  <!-- Heart garland -->
+  <g id="svgGarland">
+    <path d="M10 40 Q25 20 50 38 Q75 20 90 40" stroke="#c9a84c" stroke-width="1.5" fill="none" opacity="0.6" stroke-dasharray="4,3"/>
+    <path d="M20 35 C18 28, 28 28, 20 38 C12 28, 22 28, 20 35Z" fill="#c97b84" opacity="0.8"/>
+    <path d="M50 33 C48 26, 58 26, 50 36 C42 26, 52 26, 50 33Z" fill="#c97b84" opacity="0.8"/>
+    <path d="M80 35 C78 28, 88 28, 80 38 C72 28, 82 28, 80 35Z" fill="#c97b84" opacity="0.8"/>
+    <path d="M10 40 Q15 55 10 65" stroke="#7a9e7e" stroke-width="1.5" fill="none"/>
+    <path d="M50 38 Q55 55 50 65" stroke="#7a9e7e" stroke-width="1.5" fill="none"/>
+    <path d="M90 40 Q85 55 90 65" stroke="#7a9e7e" stroke-width="1.5" fill="none"/>
+    <ellipse cx="10" cy="68" rx="5" ry="8" fill="#7a9e7e" opacity="0.7" transform="rotate(-10 10 68)"/>
+    <ellipse cx="50" cy="68" rx="5" ry="8" fill="#7a9e7e" opacity="0.7"/>
+    <ellipse cx="90" cy="68" rx="5" ry="8" fill="#7a9e7e" opacity="0.65" transform="rotate(10 90 68)"/>
+  </g>
+
+  <!-- Butterfly -->
+  <g id="svgButterfly">
+    <path d="M50 50 Q30 20 10 30 Q20 50 50 50" fill="#a89ecc" opacity="0.85"/>
+    <path d="M50 50 Q70 20 90 30 Q80 50 50 50" fill="#9080bc" opacity="0.85"/>
+    <path d="M50 50 Q32 68 15 62 Q25 50 50 50" fill="#b8aedd" opacity="0.8"/>
+    <path d="M50 50 Q68 68 85 62 Q75 50 50 50" fill="#a89ecc" opacity="0.8"/>
+    <ellipse cx="22" cy="34" rx="6" ry="4" fill="#f0ecff" opacity="0.5" transform="rotate(-30 22 34)"/>
+    <ellipse cx="78" cy="34" rx="6" ry="4" fill="#f0ecff" opacity="0.5" transform="rotate(30 78 34)"/>
+    <line x1="50" y1="42" x2="50" y2="62" stroke="#3a2a5a" stroke-width="2"/>
+    <path d="M50 42 Q44 36 40 30" stroke="#3a2a5a" stroke-width="1.5" fill="none"/>
+    <path d="M50 42 Q56 36 60 30" stroke="#3a2a5a" stroke-width="1.5" fill="none"/>
+    <circle cx="40" cy="29" r="2" fill="#3a2a5a"/>
+    <circle cx="60" cy="29" r="2" fill="#3a2a5a"/>
+  </g>
+
+  <!-- Leaf sprig -->
+  <g id="svgLeaf">
+    <path d="M50 85 Q50 60 50 40" stroke="#5a8260" stroke-width="2.5" fill="none"/>
+    <ellipse cx="36" cy="55" rx="12" ry="7" fill="#7a9e7e" opacity="0.85" transform="rotate(-35 36 55)"/>
+    <ellipse cx="64" cy="50" rx="12" ry="7" fill="#5a8260" opacity="0.85" transform="rotate(35 64 50)"/>
+    <ellipse cx="38" cy="36" rx="10" ry="6" fill="#8ab08e" opacity="0.8" transform="rotate(-25 38 36)"/>
+    <ellipse cx="62" cy="32" rx="10" ry="6" fill="#6a9070" opacity="0.8" transform="rotate(25 62 32)"/>
+    <ellipse cx="50" cy="22" rx="9" ry="14" fill="#7a9e7e" opacity="0.75"/>
+    <path d="M36 55 Q42 55 50 50" stroke="#5a8260" stroke-width="1" fill="none" opacity="0.5"/>
+    <path d="M64 50 Q58 50 50 50" stroke="#5a8260" stroke-width="1" fill="none" opacity="0.5"/>
+  </g>
+
+  <!-- Polaroid camera deco -->
+  <g id="svgCamera">
+    <rect x="15" y="25" width="70" height="55" rx="5" fill="#f5e9d0" stroke="#c9a84c" stroke-width="2"/>
+    <rect x="25" y="32" width="50" height="35" rx="3" fill="#ddd" opacity="0.6"/>
+    <circle cx="50" cy="49" r="12" fill="#aaa" opacity="0.5"/>
+    <circle cx="50" cy="49" r="8" fill="#888" opacity="0.4"/>
+    <circle cx="50" cy="49" r="4" fill="#555" opacity="0.3"/>
+    <rect x="15" y="70" width="70" height="15" rx="0 0 5 5" fill="#e8d0a0" opacity="0.8"/>
+    <circle cx="72" cy="35" r="4" fill="#c97b84" opacity="0.7"/>
+  </g>
+
+  <!-- Stars cluster -->
+  <g id="svgStars">
+    <polygon points="50,10 53,22 65,22 55,30 59,42 50,34 41,42 45,30 35,22 47,22" fill="#f5c842" opacity="0.9"/>
+    <polygon points="20,40 22,48 30,48 24,53 26,61 20,56 14,61 16,53 10,48 18,48" fill="#f5c842" opacity="0.7"/>
+    <polygon points="78,35 80,43 88,43 82,48 84,56 78,51 72,56 74,48 68,43 76,43" fill="#f5c842" opacity="0.75"/>
+    <circle cx="30" cy="25" r="2" fill="#f5c842" opacity="0.5"/>
+    <circle cx="70" cy="65" r="2" fill="#f5c842" opacity="0.5"/>
+    <circle cx="15" cy="70" r="1.5" fill="#f5c842" opacity="0.4"/>
+    <circle cx="85" cy="20" r="1.5" fill="#f5c842" opacity="0.4"/>
+  </g>
+</defs>
+</svg>
 
 <script>
 // ── STATE ──
-let memories = [];
-let pageTitle = '';
-let selectedMemory = null;
-let dragState = null;
-let pendingPhotoData = null;
-let selectedSticker = null;
-let noteColorIdx = 0;
-let labelColorIdx = 0;
-let bgIndex = 0;
+let pages = [];
+let activePid = null;
+let pendingPhoto = null;
+let noteColI = 0;
+let labelColI = 0;
+let selDecoKey = null;
+let curBgPid = null;
+let selEl = null, selItem = null, selPage = null;
 
-const NOTE_COLORS = [
-  { bg: '#fff9e6', accent: '#c9a84c' },
-  { bg: '#fce4ec', accent: '#c9707a' },
-  { bg: '#e8f5e9', accent: '#7a9e7e' },
-  { bg: '#e3f2fd', accent: '#5b8db8' },
-  { bg: '#f3e5f5', accent: '#9c6fb6' },
-  { bg: '#fff3e0', accent: '#d4845a' },
+const NOTE_COLS = [
+  {bg:'#fff9e6',accent:'#c9a84c'},{bg:'#fce8ec',accent:'#c97b84'},
+  {bg:'#eaf3ea',accent:'#7a9e7e'},{bg:'#e8f0fa',accent:'#5b8db8'},
+  {bg:'#f3eaf8',accent:'#9c6fb6'},{bg:'#fff3e0',accent:'#d4845a'},
 ];
-const LABEL_COLORS = ['#c9707a','#c9a84c','#7a9e7e','#5b8db8','#9c6fb6','#d4845a','#2c1f1f'];
-const STICKERS = ['💌','🌸','🌹','🌷','🌼','💐','🫶','💖','💕','💗','✨','⭐','🌟','🎀','🎁','🥂','🍓','🍰','🫧','🌙','☀️','🌈','🦋','🐾','🌿','🍃','🪷','💫','🎶','🎵','🧸','🪞','🕯️','🫐','🍒','🍑','🧁','🌺','💝','🫀'];
-const BACKGROUNDS = [
-  { label: 'Parchment', style: 'background-color:#f5e6d0;' },
-  { label: 'Rose', style: 'background-color:#fce4ec;background-image:radial-gradient(circle at 30% 20%,#ffd6df 0%,transparent 60%);' },
-  { label: 'Sage', style: 'background-color:#e8f0e8;background-image:radial-gradient(circle at 70% 80%,#d6e8d6 0%,transparent 60%);' },
-  { label: 'Sky', style: 'background-color:#e3f0fb;background-image:radial-gradient(circle at 20% 80%,#cce4f7 0%,transparent 60%);' },
-  { label: 'Lavender', style: 'background-color:#f0e8f8;background-image:radial-gradient(circle at 80% 20%,#e0d0f0 0%,transparent 60%);' },
-  { label: 'Ivory', style: 'background-color:#fffff0;background-image:radial-gradient(circle at 50% 50%,#fffee0 0%,transparent 80%);' },
-  { label: 'Night', style: 'background-color:#1a1228;background-image:radial-gradient(circle at 30% 30%,#2d1f3d 0%,transparent 60%);' },
-  { label: 'Kraft', style: 'background-color:#d9b896;background-image:url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%274%27 height=%274%27%3E%3Crect width=%274%27 height=%274%27 fill=%27%23d9b896%27/%3E%3Ccircle cx=%272%27 cy=%272%27 r=%221%27 fill=%27%23c9a57d%27 opacity=%270.4%27/%3E%3C/svg%3E\");' },
+const LABEL_COLS = ['#7a3d44','#b8915a','#7a9e7e','#5b8db8','#9c6fb6','#d4845a','#2a1f1a'];
+const BG_LIST = [
+  {k:'cream',c:'#fdf8f0'},{k:'rose',c:'#fce4ec'},{k:'sage',c:'#dde8dc'},
+  {k:'sky',c:'#ddeef8'},{k:'lavender',c:'#ede0f8'},{k:'warm',c:'#f5e8cc'},{k:'dark',c:'#2a1828'},
+];
+const DECOS = [
+  {k:'rose',   l:'Rose',       svg:'svgRose',     w:80, h:80},
+  {k:'daisy',  l:'Daisy',      svg:'svgDaisy',    w:80, h:80},
+  {k:'lavender',l:'Lavender',  svg:'svgLavender', w:70, h:100},
+  {k:'bow',    l:'Ribbon Bow', svg:'svgBow',      w:100,h:80},
+  {k:'blossom',l:'Blossom',    svg:'svgBlossom',  w:100,h:100},
+  {k:'tape',   l:'Washi Tape', svg:'svgTape',     w:120,h:50},
+  {k:'corner', l:'Flourish',   svg:'svgCorner',   w:80, h:80},
+  {k:'garland',l:'Garland',    svg:'svgGarland',  w:120,h:80},
+  {k:'butterfly',l:'Butterfly',svg:'svgButterfly',w:90, h:70},
+  {k:'leaf',   l:'Leaf Sprig', svg:'svgLeaf',     w:70, h:100},
+  {k:'stars',  l:'Stars',      svg:'svgStars',    w:90, h:80},
+  {k:'camera', l:'Camera',     svg:'svgCamera',   w:80, h:80},
 ];
 
-const BG_COLORS_DISPLAY = ['#f5e6d0','#fce4ec','#e8f0e8','#e3f0fb','#f0e8f8','#fffff0','#1a1228','#d9b896'];
-
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
-  buildStickerGrid();
+// ── BOOT ──
+window.addEventListener('DOMContentLoaded', () => {
   buildNoteColors();
   buildLabelColors();
-  buildBgOptions();
-  loadFromStorage();
-  document.getElementById('pageTitle').addEventListener('input', e => {
-    pageTitle = e.target.value;
-    scheduleSave();
-  });
-  document.getElementById('canvas').addEventListener('click', e => {
-    if (e.target === document.getElementById('canvas') || e.target.id === 'emptyState') {
-      clearSelected();
-    }
-  });
+  buildDecoGrid();
+  buildBgRow();
+  load();
+  // Close modals on overlay click
+  document.querySelectorAll('.overlay').forEach(ov =>
+    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('vis'); })
+  );
 });
 
-// ── BUILD UI COMPONENTS ──
-function buildStickerGrid() {
-  const grid = document.getElementById('stickerGrid');
-  STICKERS.forEach((s, i) => {
-    const d = document.createElement('div');
-    d.className = 'sticker-option';
-    d.textContent = s;
-    d.onclick = () => {
-      document.querySelectorAll('.sticker-option').forEach(x => x.classList.remove('selected'));
-      d.classList.add('selected');
-      selectedSticker = s;
-    };
-    grid.appendChild(d);
+// ── OPEN BOOK (dismiss cover overlay) ──
+function openBook() {
+  document.getElementById('coverOverlay').classList.add('dismissed');
+  if (pages.length > 0) switchPage(pages[0].id);
+  refreshToolbar();
+}
+
+// ── ADD PAGE ──
+function addPage() {
+  const id = 'p' + Date.now();
+  const page = { id, title: '', bg: 'cream', items: [] };
+  pages.push(page);
+  _renderPage(page);
+  switchPage(id);
+  saveAll();
+}
+
+function _renderPage(page) {
+  // ── Tab ──
+  const tab = document.createElement('div');
+  tab.className = 'ptab';
+  tab.id = 'tab_' + page.id;
+  tab.textContent = page.title || '✦';
+  tab.addEventListener('click', () => switchPage(page.id));
+  document.getElementById('tabsList').appendChild(tab);
+
+  // ── Page element ──
+  const pg = document.createElement('div');
+  pg.className = 'spage';
+  pg.id = 'pg_' + page.id;
+  pg.dataset.bg = page.bg;
+
+  // Title bar
+  const bar = document.createElement('div');
+  bar.className = 'pbar';
+
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'ptitle';
+  inp.placeholder = 'Name this page…'; inp.value = page.title || ''; inp.maxLength = 40;
+  inp.addEventListener('input', e => {
+    page.title = e.target.value;
+    tab.textContent = page.title || '✦';
+    saveAll();
   });
+
+  const bgBtn = document.createElement('button');
+  bgBtn.className = 'pbarbtn'; bgBtn.textContent = 'Background';
+  bgBtn.onclick = () => { curBgPid = page.id; openM('mBg'); };
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'pbarbtn del'; delBtn.textContent = 'Delete';
+  delBtn.onclick = () => deletePage(page.id);
+
+  bar.appendChild(inp); bar.appendChild(bgBtn); bar.appendChild(delBtn);
+
+  // Canvas
+  const canvas = document.createElement('div');
+  canvas.className = 'pcanvas';
+  canvas.id = 'canvas_' + page.id;
+
+  const hint = document.createElement('div');
+  hint.className = 'pempty';
+  hint.innerHTML = '<svg width="48" height="48" viewBox="0 0 100 100"><use href="#svgRose"/></svg><p>Use the toolbar to decorate</p>';
+  canvas.appendChild(hint);
+
+  pg.appendChild(bar);
+  pg.appendChild(canvas);
+  document.getElementById('pageHost').appendChild(pg);
+
+  // Render existing items
+  (page.items || []).forEach(item => _renderItem(item, canvas, page));
 }
 
-function buildNoteColors() {
-  const row = document.getElementById('noteColors');
-  NOTE_COLORS.forEach((c, i) => {
-    const s = document.createElement('div');
-    s.className = 'color-swatch' + (i === 0 ? ' active' : '');
-    s.style.background = c.bg;
-    s.style.border = `2px solid ${c.accent}`;
-    s.onclick = () => {
-      document.querySelectorAll('#noteColors .color-swatch').forEach(x => x.classList.remove('active'));
-      s.classList.add('active');
-      noteColorIdx = i;
-    };
-    row.appendChild(s);
-  });
+function switchPage(id) {
+  activePid = id;
+  document.querySelectorAll('.spage').forEach(p =>
+    p.classList.toggle('active', p.id === 'pg_' + id)
+  );
+  document.querySelectorAll('.ptab').forEach(t =>
+    t.classList.toggle('active', t.id === 'tab_' + id)
+  );
+  refreshNoPageMsg();
+  refreshToolbar();
+  clearSel();
 }
 
-function buildLabelColors() {
-  const row = document.getElementById('labelColors');
-  LABEL_COLORS.forEach((c, i) => {
-    const s = document.createElement('div');
-    s.className = 'color-swatch' + (i === 0 ? ' active' : '');
-    s.style.background = c;
-    s.onclick = () => {
-      document.querySelectorAll('#labelColors .color-swatch').forEach(x => x.classList.remove('active'));
-      s.classList.add('active');
-      labelColorIdx = i;
-    };
-    row.appendChild(s);
-  });
+function deletePage(id) {
+  if (!confirm('Delete this page?')) return;
+  pages = pages.filter(p => p.id !== id);
+  document.getElementById('pg_' + id)?.remove();
+  document.getElementById('tab_' + id)?.remove();
+  activePid = pages.length > 0 ? pages[0].id : null;
+  if (activePid) switchPage(activePid);
+  else { refreshNoPageMsg(); refreshToolbar(); }
+  saveAll();
 }
 
-function buildBgOptions() {
-  const row = document.getElementById('bgOptions');
-  BACKGROUNDS.forEach((bg, i) => {
-    const d = document.createElement('div');
-    d.className = 'bg-opt' + (i === 0 ? ' active' : '');
-    d.style.cssText = `background:${BG_COLORS_DISPLAY[i]};`;
-    d.title = bg.label;
-    d.onclick = () => {
-      document.querySelectorAll('.bg-opt').forEach(x => x.classList.remove('active'));
-      d.classList.add('active');
-      bgIndex = i;
-      applyBackground();
-      scheduleSave();
-    };
-    row.appendChild(d);
-  });
+function refreshNoPageMsg() {
+  document.getElementById('noPageMsg').style.display = pages.length === 0 ? 'flex' : 'none';
+}
+function refreshToolbar() {
+  document.getElementById('toolbar').classList.toggle('vis', !!activePid);
+}
+function getPage() { return pages.find(p => p.id === activePid); }
+function getCanvas() { return document.getElementById('canvas_' + activePid); }
+function refreshHint(canvas) {
+  const h = canvas.querySelector('.pempty'); if (!h) return;
+  h.style.display = canvas.querySelectorAll('.deco').length ? 'none' : 'flex';
 }
 
-function applyBackground() {
-  document.body.style.cssText = BACKGROUNDS[bgIndex].style;
+// ── PLACE ITEMS ──
+function rndPos(canvas) {
+  const w = canvas.offsetWidth || 340, h = canvas.offsetHeight || 500;
+  return { x: 20 + Math.random() * (w - 200), y: 20 + Math.random() * (h - 200) };
+}
+function rndRot(r) { return (Math.random() * r * 2 - r); }
+
+function placePhoto() {
+  if (!pendingPhoto) { toast('Choose a photo first!'); return; }
+  const pg = getPage(); if (!pg) return;
+  const canvas = getCanvas();
+  const pos = rndPos(canvas);
+  const item = {
+    id: 'i' + Date.now(), type: 'photo', src: pendingPhoto,
+    caption: document.getElementById('pCap').value || '',
+    x: pos.x, y: pos.y, rot: rndRot(3), w: 180
+  };
+  pg.items.push(item);
+  _renderItem(item, canvas, pg);
+  refreshHint(canvas);
+  pendingPhoto = null;
+  document.getElementById('pCap').value = '';
+  document.getElementById('fileIn').value = '';
+  closeM('mPhoto'); saveAll();
 }
 
-// ── MODAL ──
-function openModal(id) {
-  document.getElementById(id).style.display = 'flex';
-  if (id === 'stickerModal') { selectedSticker = null; document.querySelectorAll('.sticker-option').forEach(x => x.classList.remove('selected')); }
-}
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); } });
-
-// ── ADD ELEMENTS ──
-function randomTilt() { return (Math.random() * 6 - 3).toFixed(1); }
-function randomPos() {
-  const canvas = document.getElementById('canvas');
-  const w = canvas.offsetWidth;
-  const h = Math.max(canvas.offsetHeight, 400);
-  return { x: 40 + Math.random() * Math.max(w - 300, 100), y: 40 + Math.random() * Math.max(h - 300, 100) };
-}
-
-function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => { pendingPhotoData = ev.target.result; };
-  reader.readAsDataURL(file);
+function placeNote() {
+  const txt = document.getElementById('noteTxt').value.trim();
+  if (!txt) { toast('Write something!'); return; }
+  const pg = getPage(); if (!pg) return;
+  const canvas = getCanvas();
+  const pos = rndPos(canvas);
+  const c = NOTE_COLS[noteColI];
+  const item = {
+    id: 'i' + Date.now(), type: 'note', text: txt,
+    bg: c.bg, accent: c.accent,
+    x: pos.x, y: pos.y, rot: rndRot(3), w: 170,
+    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  };
+  pg.items.push(item);
+  _renderItem(item, canvas, pg);
+  refreshHint(canvas);
+  document.getElementById('noteTxt').value = '';
+  closeM('mNote'); saveAll();
 }
 
-function addPhoto() {
-  if (!pendingPhotoData) { alert('Please choose a photo first.'); return; }
-  const caption = document.getElementById('photoCaption').value || '';
-  const pos = randomPos();
-  const tilt = randomTilt();
-  const id = Date.now();
-  const mem = { id, type: 'photo', src: pendingPhotoData, caption, x: pos.x, y: pos.y, tilt, w: 220 };
-  memories.push(mem);
-  renderMemory(mem);
-  pendingPhotoData = null;
-  document.getElementById('photoCaption').value = '';
-  document.getElementById('fileInput').value = '';
-  closeModal('photoModal');
-  updateEmptyState();
-  scheduleSave();
+function placeDeco() {
+  if (!selDecoKey) { toast('Pick a decoration!'); return; }
+  const pg = getPage(); if (!pg) return;
+  const canvas = getCanvas();
+  const pos = rndPos(canvas);
+  const def = DECOS.find(d => d.k === selDecoKey);
+  const item = {
+    id: 'i' + Date.now(), type: 'deco', key: selDecoKey,
+    x: pos.x, y: pos.y, rot: rndRot(8), w: def.w, h: def.h
+  };
+  pg.items.push(item);
+  _renderItem(item, canvas, pg);
+  refreshHint(canvas);
+  closeM('mDeco'); saveAll();
 }
 
-function addNote() {
-  const text = document.getElementById('noteText').value.trim();
-  if (!text) { alert('Please write something!'); return; }
-  const pos = randomPos();
-  const tilt = randomTilt();
-  const id = Date.now();
-  const c = NOTE_COLORS[noteColorIdx];
-  const mem = { id, type: 'note', text, bg: c.bg, accent: c.accent, x: pos.x, y: pos.y, tilt, date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) };
-  memories.push(mem);
-  renderMemory(mem);
-  document.getElementById('noteText').value = '';
-  closeModal('noteModal');
-  updateEmptyState();
-  scheduleSave();
+function placeLabel() {
+  const txt = document.getElementById('labelTxt').value.trim();
+  if (!txt) { toast('Enter label text!'); return; }
+  const pg = getPage(); if (!pg) return;
+  const canvas = getCanvas();
+  const pos = rndPos(canvas);
+  const item = {
+    id: 'i' + Date.now(), type: 'label', text: txt,
+    color: LABEL_COLS[labelColI], x: pos.x, y: pos.y, rot: rndRot(5), fs: 1.3
+  };
+  pg.items.push(item);
+  _renderItem(item, canvas, pg);
+  refreshHint(canvas);
+  document.getElementById('labelTxt').value = '';
+  closeM('mLabel'); saveAll();
 }
 
-function addSticker() {
-  if (!selectedSticker) { alert('Please pick a sticker!'); return; }
-  const pos = randomPos();
-  const id = Date.now();
-  const mem = { id, type: 'sticker', emoji: selectedSticker, x: pos.x, y: pos.y, size: 56 };
-  memories.push(mem);
-  renderMemory(mem);
-  closeModal('stickerModal');
-  updateEmptyState();
-  scheduleSave();
-}
+// ── RENDER ITEM ──
+function _renderItem(item, canvas, page) {
+  const el = document.createElement('div');
+  el.className = 'deco';
+  el.id = 'el_' + item.id;
+  el.style.left = item.x + 'px';
+  el.style.top = item.y + 'px';
+  el.style.transform = 'rotate(' + (item.rot || 0) + 'deg)';
 
-function addLabel() {
-  const text = document.getElementById('labelText').value.trim();
-  if (!text) { alert('Please enter label text!'); return; }
-  const pos = randomPos();
-  const tilt = randomTilt();
-  const id = Date.now();
-  const mem = { id, type: 'label', text, color: LABEL_COLORS[labelColorIdx], x: pos.x, y: pos.y, tilt };
-  memories.push(mem);
-  renderMemory(mem);
-  document.getElementById('labelText').value = '';
-  closeModal('labelModal');
-  updateEmptyState();
-  scheduleSave();
-}
-
-// ── RENDER ──
-function renderMemory(mem) {
-  const canvas = document.getElementById('canvas');
-  let el;
-
-  if (mem.type === 'photo') {
-    el = document.createElement('div');
-    el.className = 'memory memory-photo';
-    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;width:${mem.w || 220}px;`;
-    el.innerHTML = `
-      <div class="tape"></div>
-      <img src="${mem.src}" alt="memory" />
-      <div class="caption" contenteditable="true" data-field="caption">${escHtml(mem.caption)}</div>
-      <button class="delete-btn" title="Remove">×</button>
-      <div class="resize-handle"></div>
-    `;
-  } else if (mem.type === 'note') {
-    el = document.createElement('div');
-    el.className = 'memory memory-note';
-    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;--note-bg:${mem.bg};--note-accent:${mem.accent};`;
-    el.innerHTML = `
-      <div class="note-text" contenteditable="true" data-field="text">${escHtml(mem.text)}</div>
-      <div class="note-date">${mem.date || ''}</div>
-      <button class="delete-btn" title="Remove">×</button>
-      <div class="resize-handle"></div>
-    `;
-  } else if (mem.type === 'sticker') {
-    el = document.createElement('div');
-    el.className = 'memory memory-sticker';
-    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--sticker-size:${mem.size || 56}px;font-size:${mem.size || 56}px;`;
-    el.textContent = mem.emoji;
-    el.innerHTML += `<button class="delete-btn" title="Remove">×</button><div class="resize-handle"></div>`;
-  } else if (mem.type === 'label') {
-    el = document.createElement('div');
-    el.className = 'memory memory-label';
-    el.style.cssText = `left:${mem.x}px;top:${mem.y}px;--tilt:${mem.tilt}deg;--label-color:${mem.color};transform:rotate(${mem.tilt}deg);`;
-    el.innerHTML = `<span contenteditable="true" data-field="text">${escHtml(mem.text)}</span><button class="delete-btn" title="Remove">×</button>`;
+  if (item.type === 'photo') {
+    el.classList.add('deco-photo');
+    el.style.width = (item.w || 180) + 'px';
+    const img = document.createElement('img'); img.src = item.src; img.alt = '';
+    const cap = document.createElement('div');
+    cap.className = 'pcap'; cap.contentEditable = 'true'; cap.dataset.f = 'caption';
+    cap.textContent = item.caption || '';
+    el.appendChild(img); el.appendChild(cap);
+  } else if (item.type === 'note') {
+    el.classList.add('deco-note');
+    el.style.cssText += ';background:' + item.bg + ';border-left:4px solid ' + item.accent + ';width:' + (item.w || 170) + 'px';
+    const body = document.createElement('div');
+    body.className = 'nbody'; body.contentEditable = 'true'; body.dataset.f = 'text';
+    body.textContent = item.text || '';
+    const date = document.createElement('div');
+    date.className = 'ndate'; date.textContent = item.date || '';
+    el.appendChild(body); el.appendChild(date);
+  } else if (item.type === 'deco') {
+    el.classList.add('deco-svg');
+    const def = DECOS.find(d => d.k === item.key);
+    if (def) {
+      const ns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('width', item.w || def.w);
+      svg.setAttribute('height', item.h || def.h);
+      svg.setAttribute('viewBox', '0 0 100 100');
+      const use = document.createElementNS(ns, 'use');
+      use.setAttribute('href', '#' + def.svg);
+      svg.appendChild(use); el.appendChild(svg);
+    }
+  } else if (item.type === 'label') {
+    el.classList.add('deco-label');
+    el.style.color = item.color;
+    el.style.fontSize = (item.fs || 1.3) + 'rem';
+    const span = document.createElement('span');
+    span.contentEditable = 'true'; span.dataset.f = 'text'; span.textContent = item.text || '';
+    el.appendChild(span);
   }
 
-  el.dataset.id = mem.id;
-  makeDraggable(el, mem);
+  // Control buttons
+  const xb = document.createElement('button'); xb.className = 'xbtn'; xb.textContent = '×';
+  xb.addEventListener('click', e => { e.stopPropagation(); removeItem(item, page, canvas); });
+  const rb = document.createElement('button'); rb.className = 'rbtn'; rb.textContent = '↺';
+  rb.addEventListener('mousedown', e => { e.stopPropagation(); e.preventDefault(); startRotate(e, el, item); });
+  const sb = document.createElement('button'); sb.className = 'sbtn'; sb.textContent = '⤡';
+  sb.addEventListener('mousedown', e => { e.stopPropagation(); e.preventDefault(); startScale(e, el, item); });
+  el.appendChild(xb); el.appendChild(rb); el.appendChild(sb);
 
-  // Select on click
+  // Contenteditable sync
+  el.querySelectorAll('[contenteditable]').forEach(ce => {
+    ce.addEventListener('input', () => { item[ce.dataset.f] = ce.textContent; saveAll(); });
+    ce.addEventListener('mousedown', e => e.stopPropagation());
+    ce.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+  });
+
+  // Drag + select
   el.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('delete-btn') || e.target.classList.contains('resize-handle')) return;
-    selectMemory(el, mem);
+    if (e.target.classList.contains('xbtn') || e.target.classList.contains('rbtn') ||
+        e.target.classList.contains('sbtn') || e.target.hasAttribute('contenteditable')) return;
+    e.preventDefault();
+    selectEl(el, item, page);
+    startDrag(e, el, item);
   });
   el.addEventListener('touchstart', e => {
-    if (e.target.classList.contains('delete-btn')) return;
-    selectMemory(el, mem);
+    if (e.target.classList.contains('xbtn') || e.target.hasAttribute('contenteditable')) return;
+    selectEl(el, item, page);
+    startDragTouch(e, el, item);
   }, { passive: true });
-
-  // Delete
-  const delBtn = el.querySelector('.delete-btn');
-  if (delBtn) delBtn.addEventListener('click', e => { e.stopPropagation(); removeMemory(mem.id); });
-
-  // Resize
-  const resizeHandle = el.querySelector('.resize-handle');
-  if (resizeHandle) makeResizable(el, mem, resizeHandle);
-
-  // Save on content edit
-  el.querySelectorAll('[contenteditable]').forEach(ce => {
-    ce.addEventListener('input', () => {
-      const field = ce.dataset.field;
-      if (field) { mem[field] = ce.textContent; scheduleSave(); }
-    });
-    ce.addEventListener('mousedown', e => e.stopPropagation());
-  });
 
   canvas.appendChild(el);
 }
 
-function escHtml(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function removeItem(item, page, canvas) {
+  page.items = page.items.filter(i => i.id !== item.id);
+  document.getElementById('el_' + item.id)?.remove();
+  refreshHint(canvas);
+  saveAll();
 }
 
-function selectMemory(el, mem) {
-  clearSelected();
-  selectedMemory = { el, mem };
-  el.classList.add('selected');
+// ── SELECTION ──
+function selectEl(el, item, page) {
+  clearSel();
+  selEl = el; selItem = item; selPage = page;
+  el.classList.add('sel');
 }
-
-function clearSelected() {
-  document.querySelectorAll('.memory.selected').forEach(e => e.classList.remove('selected'));
-  selectedMemory = null;
+function clearSel() {
+  selEl?.classList.remove('sel');
+  selEl = null; selItem = null; selPage = null;
 }
-
-function removeMemory(id) {
-  memories = memories.filter(m => m.id !== id);
-  const el = document.querySelector(`[data-id="${id}"]`);
-  if (el) el.remove();
-  updateEmptyState();
-  scheduleSave();
-}
-
-function updateEmptyState() {
-  const es = document.getElementById('emptyState');
-  if (es) es.style.display = memories.length > 0 ? 'none' : 'block';
-}
-
-// ── DRAG ──
-function makeDraggable(el, mem) {
-  let startX, startY, startLeft, startTop;
-
-  const onStart = (cx, cy) => {
-    startX = cx; startY = cy;
-    startLeft = mem.x; startTop = mem.y;
-    el.style.zIndex = 999;
-    el.style.transition = 'none';
-  };
-
-  const onMove = (cx, cy) => {
-    const dx = cx - startX, dy = cy - startY;
-    mem.x = Math.max(0, startLeft + dx);
-    mem.y = Math.max(0, startTop + dy);
-    el.style.left = mem.x + 'px';
-    el.style.top = mem.y + 'px';
-  };
-
-  const onEnd = () => { el.style.zIndex = ''; scheduleSave(); };
-
-  el.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('delete-btn') || e.target.classList.contains('resize-handle') || e.target.hasAttribute('contenteditable')) return;
-    e.preventDefault();
-    onStart(e.clientX, e.clientY);
-    const mm = e2 => onMove(e2.clientX, e2.clientY);
-    const mu = () => { onEnd(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
-    window.addEventListener('mousemove', mm);
-    window.addEventListener('mouseup', mu);
-  });
-
-  el.addEventListener('touchstart', e => {
-    if (e.target.classList.contains('delete-btn') || e.target.hasAttribute('contenteditable')) return;
-    const t = e.touches[0];
-    onStart(t.clientX, t.clientY);
-    const tm = e2 => { const t2 = e2.touches[0]; onMove(t2.clientX, t2.clientY); };
-    const te = () => { onEnd(); el.removeEventListener('touchmove', tm); el.removeEventListener('touchend', te); };
-    el.addEventListener('touchmove', tm, { passive: true });
-    el.addEventListener('touchend', te);
-  }, { passive: true });
-}
-
-function makeResizable(el, mem, handle) {
-  handle.addEventListener('mousedown', e => {
-    e.preventDefault(); e.stopPropagation();
-    const startX = e.clientX;
-    const startW = el.offsetWidth;
-    const mm = e2 => {
-      const newW = Math.max(120, startW + (e2.clientX - startX));
-      el.style.width = newW + 'px';
-      mem.w = newW;
-      if (mem.type === 'sticker') { mem.size = newW; el.style.fontSize = newW + 'px'; }
-    };
-    const mu = () => { scheduleSave(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
-    window.addEventListener('mousemove', mm);
-    window.addEventListener('mouseup', mu);
-  });
-}
-
-// ── STORAGE ──
-// We use localStorage for persistence. Photos are stored as base64 data URLs.
-// All data lives in the browser's local storage for this domain.
-// To share between devices, use the Export/Import buttons (coming via saveAll).
-
-let saveTimer = null;
-function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveAll, 800); }
-
-function saveAll() {
-  const data = { memories, pageTitle: document.getElementById('pageTitle').value, bgIndex };
-  try {
-    localStorage.setItem('our_memories_book', JSON.stringify(data));
-    showToast();
-  } catch(e) {
-    // localStorage might be full (images are big) — warn user
-    alert('⚠️ Could not save — storage may be full. Try removing some photos or use a smaller image size.');
-  }
-}
-
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem('our_memories_book');
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    memories = data.memories || [];
-    bgIndex = data.bgIndex || 0;
-    applyBackground();
-    document.querySelectorAll('.bg-opt').forEach((d, i) => d.classList.toggle('active', i === bgIndex));
-    if (data.pageTitle) {
-      pageTitle = data.pageTitle;
-      document.getElementById('pageTitle').value = pageTitle;
-    }
-    memories.forEach(m => renderMemory(m));
-    updateEmptyState();
-  } catch(e) { console.warn('Could not load saved data', e); }
-}
-
-function showToast() {
-  const t = document.getElementById('saveToast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
-}
-
-// Keyboard delete
+document.addEventListener('mousedown', e => {
+  if (!e.target.closest('.deco') && !e.target.closest('.overlay') && !e.target.closest('#toolbar'))
+    clearSel();
+});
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedMemory && e.target === document.body) {
-    removeMemory(selectedMemory.mem.id);
-    selectedMemory = null;
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selItem && e.target === document.body) {
+    removeItem(selItem, selPage, getCanvas()); clearSel();
   }
 });
+
+// ── DRAG ──
+function startDrag(e, el, item) {
+  const sx = e.clientX, sy = e.clientY, ix = item.x, iy = item.y;
+  el.style.zIndex = 99;
+  const mm = e2 => {
+    item.x = Math.max(0, ix + (e2.clientX - sx));
+    item.y = Math.max(0, iy + (e2.clientY - sy));
+    el.style.left = item.x + 'px'; el.style.top = item.y + 'px';
+  };
+  const mu = () => { el.style.zIndex = ''; saveAll(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+function startDragTouch(e, el, item) {
+  const t = e.touches[0], sx = t.clientX, sy = t.clientY, ix = item.x, iy = item.y;
+  const tm = e2 => { const t2 = e2.touches[0]; item.x = Math.max(0, ix + (t2.clientX - sx)); item.y = Math.max(0, iy + (t2.clientY - sy)); el.style.left = item.x + 'px'; el.style.top = item.y + 'px'; };
+  const te = () => { saveAll(); el.removeEventListener('touchmove', tm); el.removeEventListener('touchend', te); };
+  el.addEventListener('touchmove', tm, { passive: true }); el.addEventListener('touchend', te);
+}
+
+// ── ROTATE ──
+function startRotate(e, el, item) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const base = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI) - (item.rot || 0);
+  const mm = e2 => {
+    item.rot = Math.atan2(e2.clientY - cy, e2.clientX - cx) * (180 / Math.PI) - base;
+    el.style.transform = 'rotate(' + item.rot + 'deg)';
+  };
+  const mu = () => { saveAll(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+
+// ── SCALE ──
+function startScale(e, el, item) {
+  const sx = e.clientX, sw = item.w || el.offsetWidth;
+  const mm = e2 => {
+    const nw = Math.max(50, sw + (e2.clientX - sx));
+    item.w = nw; el.style.width = nw + 'px';
+    if (item.type === 'deco') {
+      const svg = el.querySelector('svg');
+      if (svg) { svg.setAttribute('width', nw); svg.setAttribute('height', nw); item.h = nw; }
+    }
+    if (item.type === 'label') { item.fs = Math.max(0.6, nw / 100); el.style.fontSize = item.fs + 'rem'; }
+  };
+  const mu = () => { saveAll(); window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+
+// ── BG ──
+function setPageBg(pid, bgk) {
+  const pg = pages.find(p => p.id === pid); if (!pg) return;
+  pg.bg = bgk;
+  const el = document.getElementById('pg_' + pid); if (el) el.dataset.bg = bgk;
+  saveAll();
+}
+
+// ── BUILD UI ──
+function buildNoteColors() {
+  const row = document.getElementById('noteColors');
+  NOTE_COLS.forEach((c, i) => {
+    const s = mkSw(c.bg, i === 0, () => { row.querySelectorAll('.sw').forEach(x => x.classList.remove('on')); s.classList.add('on'); noteColI = i; });
+    s.style.border = '2px solid ' + c.accent; row.appendChild(s);
+  });
+}
+function buildLabelColors() {
+  const row = document.getElementById('labelColors');
+  LABEL_COLS.forEach((c, i) => {
+    const s = mkSw(c, i === 0, () => { row.querySelectorAll('.sw').forEach(x => x.classList.remove('on')); s.classList.add('on'); labelColI = i; });
+    row.appendChild(s);
+  });
+}
+function mkSw(color, active, onclick) {
+  const s = document.createElement('div');
+  s.className = 'sw' + (active ? ' on' : ''); s.style.background = color;
+  s.addEventListener('click', onclick); return s;
+}
+function buildDecoGrid() {
+  const grid = document.getElementById('decoGrid');
+  DECOS.forEach(d => {
+    const cell = document.createElement('div'); cell.className = 'dthumb';
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('width', '58'); svg.setAttribute('height', '58'); svg.setAttribute('viewBox', '0 0 100 100');
+    const use = document.createElementNS(ns, 'use'); use.setAttribute('href', '#' + d.svg);
+    svg.appendChild(use);
+    const lbl = document.createElement('span'); lbl.textContent = d.l;
+    cell.appendChild(svg); cell.appendChild(lbl);
+    cell.addEventListener('click', () => { grid.querySelectorAll('.dthumb').forEach(x => x.classList.remove('on')); cell.classList.add('on'); selDecoKey = d.k; });
+    grid.appendChild(cell);
+  });
+}
+function buildBgRow() {
+  const row = document.getElementById('bgRow');
+  BG_LIST.forEach(b => {
+    const s = document.createElement('div'); s.className = 'bgopt'; s.style.background = b.c; s.title = b.k;
+    s.addEventListener('click', () => { row.querySelectorAll('.bgopt').forEach(x => x.classList.remove('on')); s.classList.add('on'); setPageBg(curBgPid, b.k); });
+    row.appendChild(s);
+  });
+}
+
+// ── MODALS ──
+function openM(id) { document.getElementById(id).classList.add('vis'); }
+function closeM(id) { document.getElementById(id).classList.remove('vis'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.overlay.vis').forEach(o => o.classList.remove('vis'));
+});
+
+// ── FILE ──
+function handleFile(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { pendingPhoto = ev.target.result; toast('Photo ready — click Add to Page'); };
+  r.readAsDataURL(f);
+}
+
+// ── SAVE / LOAD ──
+let saveTimer = null;
+function saveAll() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem('mbk_v3', JSON.stringify(pages));
+      toast('✓ Saved');
+    } catch (e) { toast('⚠ Storage full — try smaller photos'); }
+  }, 600);
+}
+function load() {
+  try {
+    const raw = localStorage.getItem('mbk_v3');
+    if (!raw) return;
+    pages = JSON.parse(raw);
+    pages.forEach(p => _renderPage(p));
+    if (pages.length > 0) {
+      // Auto-dismiss cover if we have saved pages
+      document.getElementById('coverOverlay').classList.add('dismissed');
+      switchPage(pages[0].id);
+    }
+    refreshNoPageMsg();
+  } catch (e) { console.warn('load error', e); }
+}
+
+// ── TOAST ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
 </script>
 </body>
 </html>
